@@ -1,0 +1,2124 @@
+\RequirePackage{fix-cm}
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{pdfpages}
+\usepackage{graphicx}
+\usepackage{tikz}
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+
+\setmainlanguage[numerals=arabic]{armenian}
+
+\setmainfont{GHEA Grapalat}
+\newfontfamily\armenianfont{GHEA Grapalat}
+\newfontfamily\armenianfonttt{GHEA Grapalat}
+
+\usepackage[a4paper,
+            top=2.5cm,
+            bottom=2.5cm,
+            left=2.5cm,
+            right=2.5cm]{geometry}
+
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+
+\usepackage[hidelinks]{hyperref}
+\usepackage[nottoc]{tocbibind}
+
+\titleformat{\section}
+{\centering\bfseries\fontsize{14}{16}\selectfont}
+{\thesection}{1em}{\MakeUppercase}
+
+\let\oldsection\section
+\RenewDocumentCommand{\section}{s o m}{%
+  \IfBooleanTF{#1}
+    {\oldsection*{#3}}
+    {\IfNoValueTF{#2}
+      {\oldsection[\texorpdfstring{\MakeUppercase{#3}}{#3}]{#3}}
+      {\oldsection[\texorpdfstring{\MakeUppercase{#2}}{#2}]{#3}}}%
+}
+
+\titleformat{\subsection}
+{\centering\bfseries\fontsize{13}{15}\selectfont}
+{\thesubsection}{1em}{}
+
+\setlength{\emergencystretch}{3em}
+\setlength{\parindent}{0.75cm}
+\setlength{\parskip}{0pt}
+\setstretch{1.5}
+\sloppy
+
+\usepackage{listings}
+\usepackage{xcolor}   
+
+\lstdefinelanguage{Julia}
+  {morekeywords={struct,end,function,if,else,for,while,using,module,const,let},
+   sensitive=true,
+   morecomment=[l]{\#},
+   morestring=[b]",
+  }[keywords,comments,strings]
+
+\lstset{
+    backgroundcolor=\color{gray!5},   
+    basicstyle=\ttfamily\small,       
+    keywordstyle=\color{blue},        
+    commentstyle=\color{gray},        
+    stringstyle=\color{purple},       
+    showstringspaces=false,
+    breaklines=true,                  
+}
+
+\usepackage{enumitem}
+\setlist{nosep, leftmargin=1.25cm}
+
+\begin{document}
+
+\renewcommand{\contentsname}{ԲՈՎԱՆԴԱԿՈՒԹՅՈՒՆ}
+\tableofcontents
+
+\newpage
+
+\section*{Նախաբան}
+\phantomsection
+\addcontentsline{toc}{section}{ՆԱԽԱԲԱՆ}
+
+Դիցուք հարթության վրա տրված է ինչ-որ կետերի հավաքածու։ Այդ դեպքում այդ հավաքածուն ապրոքսիմացնել ինչ-որ կերպով նշանակում է գտնել ինչ-որ $L$ կոր, որը պարտադիր չէ, որ անցնի տրված բոլոր կետերով, բայց հնարավորինս «լավ» կբնութագրի կետերի այդ հավաքածուն։
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[scale=1]
+        % Կոորդինատային առանցքներ
+        \draw[->] (-1.3,0) -- (4.8,0) node[right] {$x$};
+        \draw[->] (0,-0.4) -- (0,2.8) node[left] {$y$};
+
+        % Ապրոքսիմացնող L կոր
+        \draw[thick] plot[smooth] coordinates {(-0.9,1.0) (0,1.75) (1.2,1.5) (2.6,1.15) (4.2,1.55)};
+        \node[below] at (2.2,1.15) {$L$};
+
+        % Տրված կետեր
+        \fill (-0.7,1.35) circle (2pt);
+        \fill (0.05,1.9) circle (2pt);
+        \fill (1.3,1.85) circle (2pt);
+        \fill (2.6,0.9) circle (2pt);
+        \fill (4.0,1.8) circle (2pt);
+    \end{tikzpicture}
+    \caption{Ապրոքսիմացիա}
+\end{figure}
+
+Եթե կորն անցնում է տրված բոլոր կետերով, ապա այն կոչվում է տրված կետերի բազմության ինտերպոլյացիոն կոր։
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[scale=1]
+        % Կոորդինատային առանցքներ
+        \draw[->] (-2.2,0) -- (4.8,0) node[right] {$x$};
+        \draw[->] (0,-0.4) -- (0,2.8) node[right] {$y$};
+
+        % Ինտերպոլյացիոն L կոր
+        \draw[thick] plot[smooth] coordinates {(-1.8,0.7) (-1.5,1.0) (-0.1,1.8) (1.1,1.7) (2.3,1.7) (3.6,2.2) (4.1,2.55)};
+        \node[below right] at (3.9,2.4) {$L$};
+
+        % Տրված կետեր
+        \fill (-1.5,1.0) circle (2pt);
+        \fill (-0.1,1.8) circle (2pt);
+        \fill (1.1,1.7) circle (2pt);
+        \fill (2.3,1.7) circle (2pt);
+        \fill (3.6,2.2) circle (2pt);
+    \end{tikzpicture}
+    \caption{Ինտերպոլյացիա}
+\end{figure}
+
+Սպլայնային ապրոքսիմացիայի և ինտերպոլյացիայի դեպքում մոտարկումները կատարվում են կտոր առ կտոր՝ սպլայններով։
+
+\section[Գծային ինտերպոլյացիա \texorpdfstring{\newline}{}(փոքրագույն քառակուսիների մեթոդով)]{Գծային ինտերպոլյացիա (փոքրագույն քառակուսիների մեթոդով)}
+
+Դիցուք $Oxy$ կոորդինատական հարթությունում տրված են $M_1(x_1, y_1)$, $M_2(x_2, y_2)$, $\dots$, $M_n(x_n, y_n)$ կետերը ($n \geqslant 3$)։
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[scale=1]
+        % Կոորդինատային առանցքներ
+        \draw[->] (-3.4,0) -- (5.4,0) node[right] {$x$};
+        \draw[->] (0,-0.6) -- (0,3.5) node[right] {$y$};
+        \node[below left] at (0,0) {$O$};
+
+        % y = kx + b ուղիղը (y = 0.35x + 1.0)
+        \draw[thick] (-3.2,-0.12) -- (5.0,2.75) node[right] {$y = kx + b$};
+
+        % M_1 կետ
+        \fill (-1.6,1.15) circle (2pt) node[above left] {$M_1$};
+        \draw (-1.6,1.15) -- (-1.6,0.44);
+        \draw[dashed] (-1.6,0.44) -- (-1.6,0) node[below] {$x_1$};
+
+        % M_2 կետ
+        \fill (-0.8,2.7) circle (2pt) node[left] {$M_2$};
+        \draw (-0.8,2.7) -- (-0.8,0.72);
+        \draw[dashed] (-0.8,0.72) -- (-0.8,0) node[below] {$x_2$};
+
+        % M_3 կետ
+        \fill (0.8,2.0) circle (2pt) node[above left] {$M_3$};
+        \draw (0.8,2.0) -- (0.8,1.28);
+        \draw[dashed] (0.8,1.28) -- (0.8,0) node[below] {$x_3$};
+
+        % M_4 կետ (ուղղից ներքև)
+        \fill (1.6,0.75) circle (2pt) node[right] {$M_4$};
+        \draw (1.6,1.56) -- (1.6,0.75);
+        \draw[dashed] (1.6,0.75) -- (1.6,0) node[below] {$x_4$};
+
+        % M_5 կետ
+        \fill (2.4,2.6) circle (2pt) node[above left] {$M_5$};
+        \draw (2.4,2.6) -- (2.4,1.84);
+        \draw[dashed] (2.4,1.84) -- (2.4,0) node[below] {$x_5$};
+
+        % Միջանկյալ կետ (ուղղից ներքև)
+        \fill (3.2,1.45) circle (2pt);
+        \draw (3.2,2.12) -- (3.2,1.45);
+
+        % M_n կետ
+        \fill (4.2,3.15) circle (2pt) node[above right] {$M_n$};
+        \draw (4.2,3.15) -- (4.2,2.47);
+        \draw[dashed] (4.2,2.47) -- (4.2,0) node[below] {$x_n$};
+    \end{tikzpicture}
+    \caption{Գծային ինտերպոլյացիա փոքրագույն քառակուսիների մեթոդով}
+\end{figure}
+
+Պահանջվում է գտնել $y = kx + b$ գծային ֆունկցիան այնպես, որ այն հնարավորինս «լավ» բնութագրի կետերի տրված բազմությունը։
+
+Դիտարկենք հետևյալ մեծությունը՝
+\[
+S(k, b) = \sum_{i=1}^n \bigl(y_i - (kx_i + b)\bigr)^2 \to \min
+\]
+Պետք է գտնել $k$-ն և $b$-ն։
+
+Քանի որ $S(k, b) \underset{\substack{k \to \infty \\ b \to \infty}}{\longrightarrow} +\infty$, ուստի եթե $S(k, b)$ ֆունկցիան ունի ճիշտ մեկ ստացիոնար կետ, ապա այդ կետում այդ ֆունկցիան կընդունի փոքրագույն արժեքը։
+\begin{align*}
+\frac{\partial S}{\partial k} &= -2 \sum_{i=1}^n \bigl(y_i - (kx_i + b)\bigr) x_i = -2 \sum_{i=1}^n \bigl(x_i y_i - (kx_i^2 + b x_i)\bigr) \\
+\frac{\partial S}{\partial b} &= -2 \sum_{i=1}^n \bigl(y_i - (kx_i + b)\bigr)
+\end{align*}
+
+Կազմենք ստացիոնար կետերի գտնելու համակարգը՝
+\begin{align*}
+\begin{cases}
+\dfrac{\partial S}{\partial b} = 0 \\[8pt]
+\dfrac{\partial S}{\partial k} = 0
+\end{cases}
+&\Longleftrightarrow
+\begin{cases}
+\displaystyle\sum_{i=1}^n \bigl(y_i - (kx_i + b)\bigr) = 0 \\[12pt]
+\displaystyle\sum_{i=1}^n \bigl(x_i y_i - (kx_i^2 + b x_i)\bigr) = 0
+\end{cases} \\[10pt]
+&\Longleftrightarrow
+\begin{cases}
+\displaystyle k \sum_{i=1}^n x_i + nb = \sum_{i=1}^n y_i \\[12pt]
+\displaystyle k \sum_{i=1}^n x_i^2 + b \sum_{i=1}^n x_i = \sum_{i=1}^n x_i y_i
+\end{cases}
+\end{align*}
+
+Հաշվենք համակարգի որոշիչը՝
+\[
+\Delta =
+\begin{vmatrix}
+\displaystyle\sum_{i=1}^n x_i & n \\[12pt]
+\displaystyle\sum_{i=1}^n x_i^2 & \displaystyle\sum_{i=1}^n x_i
+\end{vmatrix}
+= \left(\sum_{i=1}^n x_i\right)^2 - n \sum_{i=1}^n x_i^2 \neq 0
+\]
+որտեղից հետևում է, որ համակարգն ունի միակ լուծում։
+
+Օգտվելով Կրամերի կանոնից՝ գտնենք լուծումը։
+\[
+k = \frac{
+\begin{vmatrix}
+\sum_{i=1}^n y_i & n \\[6pt]
+\sum_{i=1}^n x_i y_i & \sum_{i=1}^n x_i
+\end{vmatrix}}{\Delta}
+= \frac{\displaystyle\sum_{i=1}^n x_i \cdot \sum_{i=1}^n y_i - n \sum_{i=1}^n x_i y_i}{\displaystyle\left(\sum_{i=1}^n x_i\right)^2 - n \sum_{i=1}^n x_i^2}
+\]
+\[
+b = \frac{1}{n} \left( \sum_{i=1}^n y_i - k \sum_{i=1}^n x_i \right) = \underbrace{\frac{\sum_{i=1}^n y_i}{n}}_{\bar{y}} - k \cdot \underbrace{\frac{\sum_{i=1}^n x_i}{n}}_{\bar{x}} = \bar{y} - k\bar{x}
+\]
+Այստեղից՝ $\bar{y} = k\bar{x} + b$, ինչը նշանակում է, որ $M(\bar{x}, \bar{y})$ կետը պատկանում է գծային ֆունկցիայի գրաֆիկին։
+
+\par\medskip\noindent\textbf{Օրինակ։} Տրված են $M_1(2, 7)$, $M_2(4, 3)$, $M_3(5, 6)$, $M_4(6, 8)$ կետերը։ Կատարել գծային ինտերպոլյացիա։
+
+\par\medskip\noindent\textbf{Լուծում։}
+\begin{align*}
+k &= \frac{(2+4+5+6)(7+3+6+8) - 4(14+12+30+48)}{(2+4+5+6)^2 - 4(4+16+25+36)} = \\[8pt]
+&= \frac{17 \cdot 24 - 4 \cdot 104}{289 - 4 \cdot 81} = \frac{408 - 416}{289 - 324} = \frac{-8}{-35} = \frac{8}{35}
+\end{align*}
+\[
+b = \frac{1}{4}\left(24 - \frac{8}{35} \cdot 17\right) = 6 - \frac{34}{35} = \frac{210 - 34}{35} = \frac{176}{35}
+\]
+Այսպիսով՝ որոնելի գծային ֆունկցիան ունի հետևյալ տեսքը՝
+\[
+y = \frac{8}{35}x + \frac{176}{35}
+\]
+
+\section{Բազմանդամային ապրոքսիմացիա}
+
+Դիցուք տրված են $M_1(x_1, y_1)$, $M_2(x_2, y_2)$, $\dots$, $M_n(x_n, y_n)$ կետերը։ Որպես ապրոքսիմացիա իրականացնող կոր ընտրենք $m$-րդ աստիճանի $P(x) = a_0 + a_1 x + a_2 x^2 + \dots + a_m x^m$ բազմանդամը, այնպես որ $m < n - 1$։
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[scale=1]
+        % Կոորդինատային առանցքներ
+        \draw[->] (-2.4,0) -- (5.2,0) node[right] {$x$};
+        \draw[->] (0,-0.6) -- (0,3.2) node[left] {$y$};
+
+        % P(x) կորը
+        \draw[thick] plot[smooth] coordinates {(-2.1,0.85) (-1.5,0.75) (0.4,1.65) (1.2,1.9) (2.0,1.65) (3.2,1.0) (4.6,0.8)};
+        \node[right] at (4.6,0.8) {$P(x)$};
+
+        % Կետերը և ուղղահայաց հատվածները
+        % M_1
+        \fill (-1.5,1.3) circle (2pt) node[above] {$M_1$};
+        \draw (-1.5,1.3) -- (-1.5,0);
+
+        % M_2
+        \fill (0.4,2.15) circle (2pt) node[below right] {$M_2$};
+        \draw (0.4,2.15) -- (0.4,0);
+
+        % M_3
+        \fill (1.2,2.7) circle (2pt) node[above right] {$M_3$};
+        \draw (1.2,2.7) -- (1.2,0);
+
+        % M_i և պրոյեկցիաները
+        \fill (2.0,2.4) circle (2pt) node[right] {$M_i$};
+        \draw (2.0,2.4) -- (2.0,0) node[below] {$x_i$};
+        \draw[dashed] (2.0,2.4) -- (0,2.4) node[left] {$y_i$};
+
+        % M_n
+        \fill (3.2,1.8) circle (2pt) node[above right] {$M_n$};
+        \draw (3.2,1.8) -- (3.2,0);
+    \end{tikzpicture}
+    \caption{Բազմանդամային ապրոքսիմացիա}
+\end{figure}
+
+Կիրառենք փոքրագույն քառակուսիների մեթոդը՝
+\[
+S = S(a_0, a_1, \dots, a_m) = \sum_{i=1}^n \bigl(y_i - (a_0 + a_1 x_i + a_2 x_i^2 + \dots + a_m x_i^m)\bigr)^2 \to \min
+\]
+Հաշվենք $S$ ֆունկցիայի մասնակի ածանցյալները՝
+\begin{align*}
+\frac{\partial S}{\partial a_0} &= -2 \sum_{i=1}^n \bigl(y_i - (a_0 + a_1 x_i + a_2 x_i^2 + \dots + a_m x_i^m)\bigr) \\
+\frac{\partial S}{\partial a_1} &= -2 \sum_{i=1}^n \bigl(y_i - (a_0 + a_1 x_i + a_2 x_i^2 + \dots + a_m x_i^m)\bigr) x_i \\
+\frac{\partial S}{\partial a_2} &= -2 \sum_{i=1}^n \bigl(y_i - (a_0 + a_1 x_i + a_2 x_i^2 + \dots + a_m x_i^m)\bigr) x_i^2 \\
+&\;\;\vdots \\
+\frac{\partial S}{\partial a_m} &= -2 \sum_{i=1}^n \bigl(y_i - (a_0 + a_1 x_i + a_2 x_i^2 + \dots + a_m x_i^m)\bigr) x_i^m
+\end{align*}
+
+Գտնենք $S$ ֆունկցիայի ստացիոնար կետը, որտեղ և ֆունկցիան կընդունի իր փոքրագույն արժեքը՝
+\begin{align}
+\begin{cases}
+\dfrac{\partial S}{\partial a_0} = 0 \\[8pt]
+\dfrac{\partial S}{\partial a_1} = 0 \\[4pt]
+\;\;\vdots \\[4pt]
+\dfrac{\partial S}{\partial a_m} = 0
+\end{cases}
+&\Longleftrightarrow
+\begin{cases}
+\displaystyle a_0 n + a_1 \sum_{i=1}^n x_i + a_2 \sum_{i=1}^n x_i^2 + \dots + a_m \sum_{i=1}^n x_i^m = \sum_{i=1}^n y_i \\[14pt]
+\displaystyle a_0 \sum_{i=1}^n x_i + a_1 \sum_{i=1}^n x_i^2 + a_2 \sum_{i=1}^n x_i^3 + \dots + a_m \sum_{i=1}^n x_i^{m+1} = \sum_{i=1}^n x_i y_i \\[8pt]
+\;\;\vdots \\[8pt]
+\displaystyle a_0 \sum_{i=1}^n x_i^m + a_1 \sum_{i=1}^n x_i^{m+1} + \dots + a_m \sum_{i=1}^n x_i^{2m} = \sum_{i=1}^n x_i^m y_i
+\end{cases}
+\label{eq:poly_system}
+\end{align}
+
+Դիտարկենք հետևյալ մատրիցը՝
+\[
+A =
+\begin{pmatrix}
+1 & x_1 & x_1^2 & \dots & x_1^m \\
+1 & x_2 & x_2^2 & \dots & x_2^m \\
+1 & x_3 & x_3^2 & \dots & x_3^m \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & x_n & x_n^2 & \dots & x_n^m
+\end{pmatrix}_{n \times (m+1)} \quad \text{(Վանդերմոնդի մատրից)}
+\]
+և սյուն-վեկտորները՝
+\[
+X =
+\begin{pmatrix}
+a_0 \\
+a_1 \\
+\vdots \\
+a_m
+\end{pmatrix}_{(m+1) \times 1},
+\qquad
+Y =
+\begin{pmatrix}
+y_1 \\
+y_2 \\
+\vdots \\
+y_n
+\end{pmatrix}_{n \times 1}
+\]
+
+Դիտարկենք հետևյալ արտադրյալները՝
+\begin{align*}
+A^T \cdot A &=
+\begin{pmatrix}
+1 & 1 & 1 & \dots & 1 \\
+x_1 & x_2 & x_3 & \dots & x_n \\
+x_1^2 & x_2^2 & x_3^2 & \dots & x_n^2 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+x_1^m & x_2^m & x_3^m & \dots & x_n^m
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+1 & x_1 & x_1^2 & \dots & x_1^m \\
+1 & x_2 & x_2^2 & \dots & x_2^m \\
+1 & x_3 & x_3^2 & \dots & x_3^m \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & x_n & x_n^2 & \dots & x_n^m
+\end{pmatrix}_{n \times (m+1)} \\[12pt]
+&=
+\begin{pmatrix}
+n & \displaystyle\sum_{i=1}^n x_i & \displaystyle\sum_{i=1}^n x_i^2 & \dots & \displaystyle\sum_{i=1}^n x_i^m \\[14pt]
+\displaystyle\sum_{i=1}^n x_i & \displaystyle\sum_{i=1}^n x_i^2 & \displaystyle\sum_{i=1}^n x_i^3 & \dots & \displaystyle\sum_{i=1}^n x_i^{m+1} \\[12pt]
+\vdots & \vdots & \vdots & \ddots & \vdots \\[8pt]
+\displaystyle\sum_{i=1}^n x_i^m & \displaystyle\sum_{i=1}^n x_i^{m+1} & \displaystyle\sum_{i=1}^n x_i^{m+2} & \dots & \displaystyle\sum_{i=1}^n x_i^{2m}
+\end{pmatrix}_{(m+1) \times (m+1)}
+\end{align*}
+
+\begin{align}
+(A^T \cdot A) \cdot X &=
+\begin{pmatrix}
+n & \sum_{i=1}^n x_i & \sum_{i=1}^n x_i^2 & \dots & \sum_{i=1}^n x_i^m \\[6pt]
+\sum_{i=1}^n x_i & \sum_{i=1}^n x_i^2 & \sum_{i=1}^n x_i^3 & \dots & \sum_{i=1}^n x_i^{m+1} \\[6pt]
+\sum_{i=1}^n x_i^2 & \sum_{i=1}^n x_i^3 & \sum_{i=1}^n x_i^4 & \dots & \sum_{i=1}^n x_i^{m+2} \\[4pt]
+\vdots & \vdots & \vdots & \ddots & \vdots \\[4pt]
+\sum_{i=1}^n x_i^m & \sum_{i=1}^n x_i^{m+1} & \sum_{i=1}^n x_i^{m+2} & \dots & \sum_{i=1}^n x_i^{2m}
+\end{pmatrix}_{(m+1) \times (m+1)}
+\cdot
+\begin{pmatrix}
+a_0 \\
+a_1 \\
+a_2 \\
+\vdots \\
+a_m
+\end{pmatrix}_{(m+1) \times 1} \nonumber \\[12pt]
+&=
+\begin{pmatrix}
+a_0 n + a_1 \sum_{i=1}^n x_i + a_2 \sum_{i=1}^n x_i^2 + \dots + a_m \sum_{i=1}^n x_i^m \\[6pt]
+a_0 \sum_{i=1}^n x_i + a_1 \sum_{i=1}^n x_i^2 + a_2 \sum_{i=1}^n x_i^3 + \dots + a_m \sum_{i=1}^n x_i^{m+1} \\[6pt]
+a_0 \sum_{i=1}^n x_i^2 + a_1 \sum_{i=1}^n x_i^3 + a_2 \sum_{i=1}^n x_i^4 + \dots + a_m \sum_{i=1}^n x_i^{m+2} \\[4pt]
+\vdots \\[4pt]
+a_0 \sum_{i=1}^n x_i^m + a_1 \sum_{i=1}^n x_i^{m+1} + a_2 \sum_{i=1}^n x_i^{m+2} + \dots + a_m \sum_{i=1}^n x_i^{2m}
+\end{pmatrix}_{(m+1) \times 1}
+\label{eq:ata_x}
+\end{align}
+
+\begin{align}
+A^T \cdot Y &=
+\begin{pmatrix}
+1 & 1 & 1 & \dots & 1 \\
+x_1 & x_2 & x_3 & \dots & x_n \\
+x_1^2 & x_2^2 & x_3^2 & \dots & x_n^2 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+x_1^m & x_2^m & x_3^m & \dots & x_n^m
+\end{pmatrix}_{(m+1) \times n}
+\cdot
+\begin{pmatrix}
+y_1 \\
+y_2 \\
+y_3 \\
+\vdots \\
+y_n
+\end{pmatrix}_{n \times 1} \nonumber \\[12pt]
+&=
+\begin{pmatrix}
+\sum_{i=1}^n y_i \\[6pt]
+\sum_{i=1}^n x_i y_i \\[6pt]
+\sum_{i=1}^n x_i^2 y_i \\[4pt]
+\vdots \\[4pt]
+\sum_{i=1}^n x_i^m y_i
+\end{pmatrix}_{(m+1) \times 1}
+\label{eq:aty}
+\end{align}
+
+Հաշվի առնելով \eqref{eq:ata_x}-ը և \eqref{eq:aty}-ը՝ \eqref{eq:poly_system} համակարգը կարելի է գրել հետևյալ մատրիցային հավասարման միջոցով՝
+\[
+(A^T \cdot A) \cdot X = A^T \cdot Y
+\]
+\[
+\boxed{X = (A^T \cdot A)^{-1} \cdot A^T \cdot Y}
+\]
+
+\par\medskip\noindent\textbf{Օրինակ։} Տրված են $M_1(2, 7)$, $M_2(4, 3)$, $M_3(5, 6)$, $M_4(6, 8)$ կետերը։
+
+\par\medskip\noindent\textbf{Լուծում։} Այստեղ $n = 4$։ Պայմանից ունենք՝
+\[
+m < n - 1 \implies m < 3 \implies m = 2 \implies P(x) = a_0 + a_1 x + a_2 x^2
+\]
+Կազմենք $A$, $A^T$ մատրիցները և $Y$, $X$ սյուն-վեկտորները՝
+\[
+A =
+\begin{pmatrix}
+1 & x_1 & x_1^2 \\
+1 & x_2 & x_2^2 \\
+1 & x_3 & x_3^2 \\
+1 & x_4 & x_4^2
+\end{pmatrix}_{4 \times 3}
+=
+\begin{pmatrix}
+1 & 2 & 4 \\
+1 & 4 & 16 \\
+1 & 5 & 25 \\
+1 & 6 & 36
+\end{pmatrix}
+\]
+\[
+A^T =
+\begin{pmatrix}
+1 & 1 & 1 & 1 \\
+2 & 4 & 5 & 6 \\
+4 & 16 & 25 & 36
+\end{pmatrix}_{3 \times 4}
+\]
+\[
+Y =
+\begin{pmatrix}
+7 \\
+3 \\
+6 \\
+8
+\end{pmatrix},
+\qquad
+X =
+\begin{pmatrix}
+a_0 \\
+a_1 \\
+a_2
+\end{pmatrix}
+\]
+Քանի որ $X = (A^T \cdot A)^{-1} \cdot A^T \cdot Y$, հաշվենք $A^T \cdot A$ մատրիցը՝
+\[
+A^T \cdot A =
+\begin{pmatrix}
+4 & 17 & 81 \\
+17 & 81 & 413 \\
+81 & 413 & 2193
+\end{pmatrix}
+\]
+
+\[
+(A^T A)^{-1} = \frac{C^T}{\Delta(A^T A)}
+\]
+\begin{align*}
+\Delta(A^T A) &=
+\begin{vmatrix}
+4 & 17 & 81 \\
+17 & 81 & 413 \\
+81 & 413 & 2193
+\end{vmatrix} \\[8pt]
+&= 4
+\begin{vmatrix}
+81 & 413 \\
+413 & 2193
+\end{vmatrix}
+- 17
+\begin{vmatrix}
+17 & 413 \\
+81 & 2193
+\end{vmatrix}
++ 81
+\begin{vmatrix}
+17 & 81 \\
+81 & 413
+\end{vmatrix} \\[8pt]
+&= 28256 - 65076 + 37260 = 440
+\end{align*}
+
+Հաշվենք $A^T A$ մատրիցի տարրերի հանրահաշվական լրացումները՝
+\begin{align*}
+C_{11} &=
+\begin{vmatrix}
+81 & 413 \\
+413 & 2193
+\end{vmatrix}
+= 7064 \\[6pt]
+C_{12} &= -
+\begin{vmatrix}
+17 & 413 \\
+81 & 2193
+\end{vmatrix}
+= -3828 \\[6pt]
+C_{13} &=
+\begin{vmatrix}
+17 & 81 \\
+81 & 413
+\end{vmatrix}
+= 460 \\[6pt]
+C_{21} &= -
+\begin{vmatrix}
+17 & 81 \\
+413 & 2193
+\end{vmatrix}
+= -3828 \\[6pt]
+C_{22} &=
+\begin{vmatrix}
+4 & 81 \\
+81 & 2193
+\end{vmatrix}
+= 2211 \\[6pt]
+C_{23} &= -
+\begin{vmatrix}
+4 & 17 \\
+81 & 413
+\end{vmatrix}
+= -275 \\[6pt]
+C_{31} &=
+\begin{vmatrix}
+17 & 81 \\
+81 & 413
+\end{vmatrix}
+= 460 \\[6pt]
+C_{32} &= -
+\begin{vmatrix}
+4 & 81 \\
+17 & 413
+\end{vmatrix}
+= -275 \\[6pt]
+C_{33} &=
+\begin{vmatrix}
+4 & 17 \\
+17 & 81
+\end{vmatrix}
+= 35
+\end{align*}
+
+Հետևաբար՝
+\[
+C =
+\begin{pmatrix}
+7064 & -3828 & 460 \\
+-3828 & 2211 & -275 \\
+460 & -275 & 35
+\end{pmatrix}
+\]
+\[
+(A^T A)^{-1} = \frac{1}{440}
+\begin{pmatrix}
+7064 & -3828 & 460 \\
+-3828 & 2211 & -275 \\
+460 & -275 & 35
+\end{pmatrix}
+=
+\begin{pmatrix}
+\dfrac{883}{55} & -\dfrac{87}{10} & \dfrac{23}{22} \\[10pt]
+-\dfrac{87}{10} & \dfrac{201}{40} & -\dfrac{5}{8} \\[10pt]
+\dfrac{23}{22} & -\dfrac{5}{8} & \dfrac{7}{88}
+\end{pmatrix}
+\]
+
+Գտնենք $X$ վեկտորը՝
+\begin{align*}
+X &=
+\begin{pmatrix}
+\dfrac{883}{55} & -\dfrac{87}{10} & \dfrac{23}{22} \\[10pt]
+-\dfrac{87}{10} & \dfrac{201}{40} & -\dfrac{5}{8} \\[10pt]
+\dfrac{23}{22} & -\dfrac{5}{8} & \dfrac{7}{88}
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+1 & 1 & 1 & 1 \\
+2 & 4 & 5 & 6 \\
+4 & 16 & 25 & 36
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+7 \\
+3 \\
+6 \\
+8
+\end{pmatrix} \\[12pt]
+&=
+\begin{pmatrix}
+\dfrac{883}{55} & -\dfrac{87}{10} & \dfrac{23}{22} \\[10pt]
+-\dfrac{87}{10} & \dfrac{201}{40} & -\dfrac{5}{8} \\[10pt]
+\dfrac{23}{22} & -\dfrac{5}{8} & \dfrac{7}{88}
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+24 \\
+104 \\
+514
+\end{pmatrix} \\[12pt]
+&=
+\begin{pmatrix}
+\dfrac{21192}{55} - \dfrac{9048}{10} + \dfrac{11822}{22} \\[10pt]
+-\dfrac{1044}{5} + \dfrac{2613}{5} - \dfrac{1285}{4} \\[10pt]
+\dfrac{276}{11} - 65 + \dfrac{1799}{44}
+\end{pmatrix}
+=
+\begin{pmatrix}
+\dfrac{983}{55} \\[10pt]
+-\dfrac{149}{20} \\[10pt]
+\dfrac{43}{44}
+\end{pmatrix}
+\end{align*}
+
+Այսպիսով՝ որոնելի բազմանդամն ունի հետևյալ տեսքը՝
+\[
+\boxed{P(x) = \frac{983}{55} - \frac{149}{20}x + \frac{43}{44}x^2}
+\]
+
+\newpage
+
+\section{Ֆակտորիզացիայի տեսակները}
+
+Մատրիցի ֆակտորիզացիա կամ վերլուծություն է կոչվում նրա մուլտիպլիկատիվ ներկայացումը, այսինքն՝ նրա ներկայացումը մի քանի մատրիցների արտադրյալով (սովորաբար երկու կամ երեք), որոնք օժտված են այս կամ այն հատկություններով։ Այդպիսի վերլուծությունները հիմնականում առաջանում են գծային տարածություններում գծային ձևափոխությունների ժամանակ, երբ վեկտորների կոորդինատները նույնացվում են սկզբնական մատրիցների տողերի կամ սյուների հետ։
+
+Դիտարկենք մի շարք հայտնի մատրիցային վերլուծություններ, որոնք օգտագործվելու են սույն դասընթացում։
+
+Դիցուք $A$-ն քառակուսային մատրից է (իրական տարրերով)։
+
+\textbf{1)} $A$ մատրիցի եռանկյունային վերլուծություն, կամ $LU$ վերլուծություն, կամ ասում են նաև $LR$ վերլուծություն — դա նրա ներկայացումն է $A = L \cdot U$ տեսքով, որտեղ $L$-ը և $U$-ն համապատասխանաբար ստորին (ձախ) և վերին (աջ) իրական եռանկյունային մատրիցներ են.
+\[
+\underbrace{\begin{pmatrix}
+a_{11} & a_{12} & \dots & a_{1n} \\
+a_{21} & a_{22} & \dots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{n1} & a_{n2} & \dots & a_{nn}
+\end{pmatrix}}_{A}
+=
+\underbrace{\begin{pmatrix}
+l_{11} & 0 & \dots & 0 \\
+l_{21} & l_{22} & \dots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+l_{n1} & l_{n2} & \dots & l_{nn}
+\end{pmatrix}}_{L}
+\cdot
+\underbrace{\begin{pmatrix}
+u_{11} & u_{12} & \dots & u_{1n} \\
+0 & u_{22} & \dots & u_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \dots & u_{nn}
+\end{pmatrix}}_{U}
+\]
+$L, U$ մատրիցներից մեկի գլխավոր անկյունագծի էլեմենտները սովորաբար վերցնում են հավասար մեկի։
+
+Այդպիսի վերլուծության կիրառության շրջանակն ընդլայնելու համար հաճախ ներմուծում (ընտրում) են համապատասխան տեղափոխությունների $P$ մատրից և իրականացնում են $PA$ մատրիցի եռանկյունային ֆակտորիզացիա։
+
+\medskip
+\noindent\textbf{Հիշեցում։} Քառակուսային $P$ մատրիցը կոչվում է տեղափոխության մատրից, եթե այդ մատրիցի յուրաքանչյուր տողում (սյան մեջ) կա ճիշտ մեկ հատ $1$, իսկ մնացած տարրերը զրոներ են։ Այլ խոսքով՝ եթե միավոր մատրիցի մեջ կատարենք տողերի (կամ սյուների) տեղափոխություն, ապա կստանանք տեղափոխության մատրից։
+\medskip
+
+\newpage
+
+Եթե $P$-ն տեղափոխության մատրից է, ապա.
+
+\begin{enumerate}
+\item[ա)] $PA$-ն տեղափոխում է $A$ մատրիցի տողերը,
+\item[բ)] $A \cdot P$-ն տեղափոխում է $A$ մատրիցի սյուները։
+\end{enumerate}
+
+Տեղափոխության $P$ մատրիցի հիմնական հատկություններն են.
+\begin{enumerate}
+\item[ա)] $P^T \cdot P = E_n$ ($P^{-1} = P^T$), այսինքն՝ $P$-ն օրթոգոնալ մատրից է,
+\item[բ)] $\det P = \pm 1$, ընդ որում՝
+\begin{itemize}
+\item $+1$ — եթե տեղափոխությունը զույգ է,
+\item $-1$ — եթե տեղափոխությունը կենտ է
+\end{itemize}
+(այսինքն՝ տեղափոխության զույգություն ասելով կհասկանանք, թե $E_n$ միավոր մատրիցի տողերը կամ սյուները ընդհանուր քանի անգամ են տեղափոխվել տրված $P$ տեղափոխության մատրիցը ստանալու համար),
+\item[գ)] $P^T$-ն, այսինքն՝ նաև $P^{-1}$-ը, տեղափոխության մատրից է,
+\item[դ)] երկու տեղափոխության մատրիցների արտադրյալը ևս տեղափոխության մատրից է,
+\item[ե)] $\operatorname{tr} P$-ն, այսինքն՝ տեղափոխության մատրիցի հետքը, ցույց է տալիս $E_n$ մատրիցի իր տեղում մնացած տարրերի քանակը։
+\end{enumerate}
+
+\medskip
+\noindent\textbf{Օրինակներ։}
+\begin{enumerate}
+\item[ա)]
+\[
+P = \begin{pmatrix}
+0 & 1 & 0 \\
+1 & 0 & 0 \\
+0 & 0 & 1
+\end{pmatrix}
+\]
+(տեղափոխվել են միավոր մատրիցի առաջին երկու տողերը),
+\[
+A = \begin{pmatrix}
+a \\
+b \\
+c
+\end{pmatrix}
+\]
+Այդ դեպքում
+\[
+PA = \begin{pmatrix}
+0 & 1 & 0 \\
+1 & 0 & 0 \\
+0 & 0 & 1
+\end{pmatrix}
+\begin{pmatrix}
+a \\
+b \\
+c
+\end{pmatrix}
+= \begin{pmatrix}
+b \\
+a \\
+c
+\end{pmatrix},
+\]
+այսինքն՝ տեղափոխվեցին $A$ մատրիցի առաջին երկու տողերը։
+
+\item[բ)]
+\[
+P = \begin{pmatrix}
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 0 \\
+1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1
+\end{pmatrix}
+\]
+(տեղափոխվել են միավոր մատրիցի առաջին և երրորդ սյուները), իսկ
+\[
+A = \begin{pmatrix}
+a_{11} & a_{12} & a_{13} & a_{14} \\
+a_{21} & a_{22} & a_{23} & a_{24} \\
+a_{31} & a_{32} & a_{33} & a_{34} \\
+a_{41} & a_{42} & a_{43} & a_{44}
+\end{pmatrix}
+\]
+\[
+\begin{pmatrix}
+a_{11} & a_{12} & a_{13} & a_{14} \\
+a_{21} & a_{22} & a_{23} & a_{24} \\
+a_{31} & a_{32} & a_{33} & a_{34} \\
+a_{41} & a_{42} & a_{43} & a_{44}
+\end{pmatrix}
+\begin{pmatrix}
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 0 \\
+1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1
+\end{pmatrix}
+= \begin{pmatrix}
+a_{13} & a_{12} & a_{11} & a_{14} \\
+a_{23} & a_{22} & a_{21} & a_{24} \\
+a_{33} & a_{32} & a_{31} & a_{34} \\
+a_{43} & a_{42} & a_{41} & a_{44}
+\end{pmatrix}
+\]
+$AP$-ն՝ դա $A$ մատրիցի մեջ առաջին և երրորդ սյուների տեղափոխությունից ստացված մատրիցն է։
+\end{enumerate}
+
+\textbf{2)} $U^T \cdot U$ վերլուծություն (կամ դրան համազորեն՝ $L \cdot L^T$ վերլուծություն) — դա $LU$ վերլուծության մասնավոր դեպքն է, երբ $A$-ն սիմետրիկ մատրից է։
+
+\textbf{3)} $U^T D U$ վերլուծություն — դա $A$ սիմետրիկ մատրիցի ներկայացումն է $A = U^T \cdot D \cdot U$ տեսքով, որտեղ $D$-ն անկյունագծային մատրից է, իսկ $U$-ն միավոր անկյունագծով վերին եռանկյունային մատրից է։
+
+\textbf{4)} Օրթոգոնալ վերլուծություն — դա $A$ քառակուսային մատրիցի ներկայացումն է $A = Q \cdot R$ տեսքով, որտեղ $Q$-ն օրթոգոնալ մատրից է, իսկ $R$-ը՝ աջ եռանկյունային մատրից. այստեղից էլ այս վերլուծության այլ անվանում՝ $QR$ վերլուծություն։
+
+Երբեմն, օրթոգոնալ վերլուծության դեպքում աջ եռանկյունային $R$ մատրիցի փոխարեն վերցնում են ձախ եռանկյունային $L$ մատրից և դրան համապատասխան կառուցում են $QL$ վերլուծություն։
+
+\medskip
+\noindent\textbf{Հիշեցում։} $Q$ քառակուսային մատրիցը կոչվում է օրթոգոնալ, եթե
+\begin{equation}\label{eq:ortho}\tag{$*$}
+Q^T \cdot Q = Q \cdot Q^T = E_n
+\end{equation}
+Սահմանումից անմիջապես հետևում է, որ $(*)$ առնչությունը կարելի է փոխարինել հետևյալ համարժեք առնչություններով.
+\begin{enumerate}
+\item[ա)] $Q^{-1} = Q^T$,
+\item[բ)] $Q$ մատրիցի սյուները (տողերը) կազմում են օրթոնորմալ վեկտորների համախումբ։
+\end{enumerate}
+
+Օրթոգոնալ մատրիցի համար ճիշտ են նաև հետևյալ հատկությունները.
+\begin{enumerate}
+\item[գ)] $\mathbb{R}^n$ էվկլիդյան տարածությունում օրթոգոնալ մատրիցով վեկտորի բազմապատկման ժամանակ վեկտորի երկարությունը չի փոխվում։
+
+Եթե $y = Qx$, ապա $\|y\| = \|x\|$։ Իրոք՝
+\begin{align*}
+\|y\|^2 &= \langle y; y \rangle = \langle Qx; Qx \rangle = (Qx)^T \cdot Qx ={} \\
+        &= x^T \cdot Q^T \cdot Q \cdot x = x^T (Q^T \cdot Q) x = x^T E_n x ={} \\
+        &= x^T \cdot x = \langle x; x \rangle = \|x\|^2
+\end{align*}
+(այստեղ վեկտորները ներկայացված են սյուներով)։
+
+\item[դ)] $\mathbb{R}^n$ էվկլիդյան տարածությունում երկու վեկտորները միևնույն օրթոգոնալ մատրիցով բազմապատկելիս վեկտորների կազմած անկյունը չի փոխվում։
+
+Իրոք, հաշվի առնելով գ)-ն, պնդումը կհետևի նրանից, որ պահպանվում է սկալյար արտադրյալը.
+\[
+\langle Qx; Qy \rangle = (Qx)^T \cdot Qy = x^T Q^T Q y = x^T y = \langle x; y \rangle
+\]
+\end{enumerate}
+\medskip
+
+գ) և դ) հատկությունները ցույց են տալիս, որ օրթոգոնալ մատրիցները իրականացնում են տարածության իզոմետրիկ ձևափոխություններ (պտույտներ, անդրադարձ և դրանց համադրույթ)։
+
+\begin{enumerate}
+\item[ե)] $\det Q = \pm 1$։
+
+$\det Q = +1$ դեպքում $Q$-ն կոչվում է սեփական օրթոգոնալ կամ պտույտի մատրից։ Դրանցով տրվում է տարածության մաքուր պտույտ։
+
+$\det Q = -1$ դեպքում $Q$ մատրիցները իրականացնում են հայելային անդրադարձում կամ պտույտի և անդրադարձի համադրույթ։
+
+\item[զ)] Օրթոգոնալ մատրիցը հակադարձելի է, որը ևս օրթոգոնալ է։
+
+Իրոք, եթե $Q$-ն օրթոգոնալ մատրից է, ապա
+\[
+(Q^{-1})^{-1} = (Q^T)^{-1} = (Q^{-1})^T,
+\]
+այսինքն՝ ըստ ա) հատկության՝ $Q^{-1}$-ը ևս օրթոգոնալ է։
+
+\item[է)] Օրթոգոնալ մատրիցների արտադրյալը օրթոգոնալ մատրից է։
+
+Իրոք, դիցուք $Q_1^{-1} = Q_1^T$, $Q_2^{-1} = Q_2^T \implies$
+\[
+(Q_1 \cdot Q_2)^{-1} = Q_2^{-1} \cdot Q_1^{-1} = Q_2^T \cdot Q_1^T = (Q_1 \cdot Q_2)^T
+\]
+\end{enumerate}
+\medskip
+
+\textbf{5)} Սինգուլյար վերլուծություն (կամ այլ խոսքով՝ SVD վերլուծություն) — դա բավականաչափ ունիվերսալ ֆակտորիզացիա է։ Այդ վերլուծությունը կարելի է կիրառել $m \times n$ չափանի ցանկացած ուղղանկյունաձև $A$ մատրիցի համար, և այն ունի $A = U \Sigma V$ տեսքը, որտեղ $U$-ն և $V$-ն համապատասխանաբար $m \times m$ և $n \times n$ չափանի օրթոգոնալ մատրիցներ են, իսկ $\Sigma$-ն $m \times n$ չափանի անկյունագծային մատրից է, որի անկյունագծի տարրերը $A$ մատրիցի սինգուլյար (կամ ասում են՝ գլխավոր) թվերն են։
+
+\medskip
+\noindent\textbf{Հիշեցում։} $A$ մատրիցի սինգուլյար թվեր են կոչվում $A^T \cdot A$ քառակուսային մատրիցի սեփական արժեքների քառակուսի արմատները․
+\begin{gather*}
+\sigma_1 \ge \sigma_2 \ge \dots \ge \sigma_k \ge 0, \qquad k = \min\{m, n\}, \\
+\sigma_i = \sqrt{\lambda_i}
+\end{gather*}
+$\lambda_i$-ն $A^T \cdot A$ մատրիցի սեփական արժեքներն են։ $A^T \cdot A$ մատրիցն ունի սեփական արժեքներ, քանի որ $A^T \cdot A$-ն սիմետրիկ մատրից է։ Ապացուցենք, որ այդ սեփական արժեքները ոչ բացասական են։
+
+Իրոք, $\forall x \in \mathbb{R}^n$, ապա
+\[
+x^T (A^T A) x = (Ax)^T Ax = \|Ax\|^2 \ge 0
+\]
+Եթե $\lambda$-ն $A^T A$-ի սեփական արժեք է, որի համապատասխան սեփական վեկտորը $v \ne 0$-ն է, ապա
+\[
+(A^T \cdot A) v = \lambda v,
+\]
+ուստի.
+
+\begin{gather*}
+v^T (A^T A) v = v^T \lambda v = \lambda v^T v = \lambda \|v\|^2 \\
+\|Av\|^2 = \lambda \|v\|^2
+\end{gather*}
+քանի որ $\|v\| > 0 \implies \lambda \ge 0$։
+
+Այժմ համոզվենք, որ եթե $B$-ն սիմետրիկ իրական մատրից է, ապա այն ունի իրական սեփական արժեքներ։ $B$-ի սեփական արժեքները
+\[
+\det(B - \lambda E_n) = 0
+\]
+հավասարման արմատներն են։ Դիցուք դրանք $\lambda_1, \lambda_2, \dots, \lambda_n$-ն են, որոնք ընդհանրապես կոմպլեքս են։ Մեր խնդիրն է ապացուցել, որ դրանք իրական են։
+
+Դիցուք $\lambda$-ն $B$-ի որևէ սեփական արժեք է, իսկ $v$-ն դրան համապատասխան սեփական վեկտորը (ոչ զրոյական), որն ընդհանուր դեպքում պետք է ունենա կոմպլեքս կոորդինատներ։ Ունենք.
+\begin{equation}\tag{I}
+Bv = \lambda v
+\end{equation}
+Վերցնելով այս հավասարության աջ և ձախ մասերի վրա երմիթյան-համալուծ «$*$» գործողությունը՝ կստանանք.
+\begin{gather}
+(Bv)^* = (\lambda v)^* \notag \\
+v^* B^* = \overline{\lambda} v^* \tag{II}
+\end{gather}
+Քանի որ $B$-ն սիմետրիկ իրական մատրից է, ուստի $B^* = B$, այսինքն՝ (II)-ից.
+\begin{equation}\tag{III}
+v^* B = \overline{\lambda} v^*
+\end{equation}
+(I)-ի երկու մասերը ձախից բազմապատկելով $v^*$-ով՝ կունենանք.
+\begin{gather}
+v^* (Bv) = v^* (\lambda v) \notag \\
+v^* B v = \lambda (v^* v) = \lambda \|v\|^2 \tag{IV}
+\end{gather}
+Այժմ (III)-ի աջ և ձախ մասերը աջից բազմապատկելով $v$-ով՝ կստանանք.
+\begin{gather}
+(v^* B) v = (\overline{\lambda} v^*) v \notag \\
+v^* B v = \overline{\lambda} (v^* v) = \overline{\lambda} \|v\|^2 \tag{V}
+\end{gather}
+(IV)-ից և (V)-ից հետևում է.
+\begin{equation}\tag{VI}
+\overline{\lambda} \|v\|^2 = \lambda \|v\|^2
+\end{equation}
+և քանի որ $\|v\|^2 > 0$, ապա (VI)-ից վերջնականապես կստանանք
+\[
+\overline{\lambda} = \lambda
+\]
+որն էլ նշանակում է, որ $\lambda$-ն իրական թիվ է։
+\medskip
+
+\section{\texorpdfstring{$LU$}{LU} վերլուծություն}
+
+Դիցուք $A = (a_{ij})_{n \times n}$ — տրված քառակուսային մատրից է, իսկ $L = (l_{ij})_{n \times n}$ և $U = (u_{ij})_{n \times n}$ համապատասխանաբար ստորին (ձախակողմյան) և վերին (աջակողմյան) եռանկյունաձև փնտրվող մատրիցներն են\footnote{Ընդունված $L$ և $U$ նշանակումները կապված են անգլերեն \textit{lower} (ստորին) և \textit{upper} (վերին) բառերի հետ։ Գոյություն ունի նշանակումների այլ ստանդարտ. $L$ և $R$ — որոնք կապված են \textit{left} (ձախ) և \textit{right} (աջ) բառերի հետ։}։
+
+Փնտրվող $L$ և $U$ մատրիցները կորոշենք $A = L \cdot U$ վերլուծության մեջ՝ կատարելով բազմապատկում և հավասարեցնելով համապատասխան տարրերը։ Քանի որ $A$ մատրիցը պարունակում է $n^2$ հատ տարր, ուստի այդքան հատ էլ կստանանք հավասարում։ $L$ և $U$ մատրիցներից յուրաքանչյուրը պարունակում է
+\[
+C_n^2 + n = \frac{n(n-1)}{2} + n = \frac{n^2 + n}{2}
+\]
+հատ անհայտ տարր, ուստի $L$-ի և $U$-ի միասին բոլոր անհայտ տարրերի քանակը կլինի $n^2 + n$։ Որպեսզի հնարավոր լինի գտնել առաջադրված խնդրի միարժեք լուծում, պետք է տրվի $n$ հատ լրացուցիչ պայման (այսինքն՝ $n^2 + n$ հատ անհայտների թիվը դարձնել $n^2$)։ Դա կարելի է անել, օրինակ, $L$ կամ $U$ մատրիցներից մեկի գլխավոր անկյունագծի տարրերը վերցնելով հավասար նախօրոք վերցված թվերին։ Որպես կանոն՝ վերցվում է $l_{ii} = 1$, $i = 1, \dots, n$ (կամ $u_{ii} = 1$)։
+
+Այսպիսով, պետք է փնտրել $l_{ij}$ ($i > j$) և $u_{ij}$ ($i \le j$) արժեքները, որոնք կբավարարեն
+\[
+\begin{pmatrix}
+1 & 0 & \dots & 0 \\
+l_{21} & 1 & \dots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+l_{n1} & l_{n2} & \dots & 1
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+u_{11} & u_{12} & \dots & u_{1n} \\
+0 & u_{22} & \dots & u_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \dots & u_{nn}
+\end{pmatrix}
+=
+\begin{pmatrix}
+a_{11} & a_{12} & \dots & a_{1n} \\
+a_{21} & a_{22} & \dots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{n1} & a_{n2} & \dots & a_{nn}
+\end{pmatrix}
+\]
+Կատարելով բազմապատկում և հավասարեցնելով համապատասխան տարրերը՝ կստանանք հավասարումների $n \times n$ մատրից.
+\begin{align*}
+& u_{11} = a_{11}; \; u_{12} = a_{12}; \; u_{13} = a_{13}; \; \dots; \; u_{1n} = a_{1n} \\
+& l_{21} u_{11} = a_{21}; \; l_{21} u_{12} + u_{22} = a_{22}; \; l_{21} u_{13} + u_{23} = a_{23}; \; \dots; \; l_{21} u_{1n} + u_{2n} = a_{2n} \\
+& l_{31} u_{11} = a_{31}; \; l_{31} u_{12} + l_{32} u_{22} = a_{32}; \; l_{31} u_{13} + l_{32} u_{23} + u_{33} = a_{33}; \; \dots \\
+& \qquad\qquad\qquad\qquad\qquad l_{31} u_{1n} + l_{32} u_{2n} + u_{3n} = a_{3n} \\
+& \qquad\qquad\qquad\qquad\qquad\qquad \vdots \\
+& l_{n1} u_{11} = a_{n1}; \; l_{n1} u_{12} + l_{n2} u_{22} = a_{n2}; \; l_{n1} u_{13} + l_{n2} u_{23} + l_{n3} u_{33} = a_{n3}; \; \dots \\
+& \qquad\qquad\qquad\qquad\qquad l_{n1} u_{1n} + l_{n2} u_{2n} + \dots + l_{n,n-1} u_{n-1,n} + u_{nn} = a_{nn}
+\end{align*}
+Ներկայացված անհայտների հետևյալ $n \times n$ չափանի մատրիցով.
+\begin{equation}
+L + U - E = \begin{pmatrix}
+u_{11} & u_{12} & u_{13} & \dots & u_{1n} \\
+l_{21} & u_{22} & u_{23} & \dots & u_{2n} \\
+l_{31} & l_{32} & u_{33} & \dots & u_{3n} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+l_{n1} & l_{n2} & l_{n3} & \dots & u_{nn}
+\end{pmatrix}
+\end{equation}
+
+Հավասարումների ստացված համակարգի կառուցվածքը թույլ է տալիս (2.1)-ում ներկայացված անհայտները մեկը մյուսի հետևից հաշվել հետևյալ հերթականությամբ. հավասարումների առաջին տողից ունենք.
+\[
+u_{1j} = a_{1j} \quad (j = 1, \dots, n)
+\]
+իսկ առաջին սյան մնացած հավասարումներից՝
+\[
+l_{i1} = \frac{a_{i1}}{u_{11}} \quad (i = 2, \dots, n)
+\]
+երկրորդ տողի մնացած հավասարումներից կգտնենք.
+\[
+u_{2j} = a_{2j} - l_{21} u_{1j} \quad (j = 2, \dots, n)
+\]
+երկրորդ սյան մնացած հավասարումներից՝
+\[
+l_{i2} = \frac{a_{i2} - l_{i1} u_{12}}{u_{22}} \quad (i = 3, \dots, n)
+\]
+և այլն։ Վերջապես, վերջին քայլում հաշվում ենք
+\[
+u_{nn} = a_{nn} - \sum_{k=1}^{n-1} l_{nk} u_{kn}
+\]
+տարրը։
+
+Հեշտ է նկատել, որ $L$ և $U$ մատրիցների ֆիքսված $0$ և $1$ տարրերից բացի մնացած բոլոր տարրերը կարելի է հաշվել՝ կիրառելով միայն հետևյալ երկու բանաձևերը.
+\begin{align}
+u_{ij} &= a_{ij} - \sum_{k=1}^{i-1} l_{ik} u_{kj} \quad (i \le j) \\
+l_{ij} &= \frac{1}{u_{jj}} \left( a_{ij} - \sum_{k=1}^{j-1} l_{ik} u_{kj} \right) \quad (i > j)
+\end{align}
+
+Պրակտիկ $LU$ վերլուծություն իրականացնելու ժամանակ պետք է հաշվի առնել հետևյալ երկու հանգամանքները։
+
+Առաջինը, (2.2) և (2.3) բանաձևերով հաշվարկներ անելիս պետք է նկատի ունենալ, որ նշված բանաձևերից մեկով որոշ տարրեր հաշվելուց հետո անցում է կատարվում մյուսին և այսպես շարունակ։ Դա հարմար է իրականացնել՝ կողմնորոշվելով $L + U - E$ մատրիցի վրա։ Այն է՝ $i = 1$ դեպքում տեղադրելով $j = 2, 3, \dots, n$՝ (2.2) բանաձևով լցնում ենք (2.1) մատրիցի առաջին տողը։ Դրանից հետո, (2.3) բանաձևով ($j = 1$, $i = 2, \dots, n$) հաշվում ենք (2.1) մատրիցի առաջին սյունը (առանց առաջին տարրի) և այլն։
+
+Երկրորդ, $A$ մատրիցի $LU$ վերլուծություն իրականացնելու գործընթացին կարող է խանգարել $U$ մատրիցի անկյունագծային տարրերի զրո լինելու հանգամանքը. (2.3) բանաձևերում իրականացվում է բաժանում այդ տարրերի վրա։ Ցույց տանք, որ $U$-ի գլխավոր անկյունագծի տարրերը զրո չեն լինի, եթե $A$ մատրիցի բոլոր գլխավոր մինորները լինեն զրոյից տարբեր։ Դիցուք այդ պայմանը տեղի ունի։ Քանի որ $u_{11} = a_{11}$, ուստի $U$ մատրիցի առաջին անկյունագծային տարրը համընկնում է $A$ մատրիցի առաջին գլխավոր մինորի հետ, ուստի այն պետք է լինի զրոյից տարբեր։ $U$ մատրիցի երկրորդ անկյունագծային տարրը կարելի է ներկայացնել
+\[
+u_{22} = a_{22} - l_{21} \cdot u_{12} = a_{22} - \frac{a_{21}}{a_{11}} a_{12} = \frac{1}{a_{11}} \cdot \begin{vmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{vmatrix}
+\]
+հետևաբար այն ևս կլինի զրոյից տարբեր, եթե $A$-ի երկրորդ գլխավոր մինորը զրոյից տարբեր է և այլն։ Պարզ է, որ գլխավոր մինորների զրոյից տարբեր լինելու պայմանը ստուգելու փոխարեն հարմար է ստուգել $u_{ii}$ տարրերի զրոյից տարբեր լինելու փաստը դրանց հաշվելու ընթացքում։
+
+Հաշվի առնելով վերը նշված երկու հանգամանքները՝ կարելի է պնդել, որ տեղի ունի հետևյալը։
+
+\medskip
+\noindent\textbf{Թեորեմ։} \textit{Եթե $A$ քառակուսային մատրիցի բոլոր գլխավոր մինորները զրոյից տարբեր են, ապա գոյություն ունեն այնպիսի $L$ ստորին և $U$ վերին եռանկյունաձև մատրիցներ, որ $A = L \cdot U$։ Եթե $L$ կամ $U$ մատրիցներից մեկի անկյունագծային տարրերը ֆիքսված են (զրոյից տարբեր), ապա այդպիսի վերլուծությունը միակն է։}
+\medskip
+
+Մատրիցների որոշ դասերի համար թեորեմում նշված պահանջը անվերապահորեն տեղի ունի։ Օրինակ, դա վերաբերում է անկյունագծային գերիշխումով մատրիցներին, այսինքն՝ այնպիսին, որ
+\begin{equation}
+|a_{ii}| > \sum_{\substack{j=1 \\ (j \ne i)}}^n |a_{ij}|, \quad \forall i = 1, 2, \dots, n
+\end{equation}
+
+Վերը նկարագրված $A$ մատրիցի $A = L \cdot U$ ֆակտորիզացիան կարելի է նույնացնել մի շարք պարզ մատրիցային հաջորդական ձևափոխություններ իրականացնելու հետ։ Այդ ձևափոխությունները իրականացնող մատրիցներն ունեն հետևյալ կառուցվածքը. առաջին քայլում այդ մատրիցն ունի հետևյալ տեսքը.
+\[
+M_1 = \begin{pmatrix}
+1 & 0 & 0 & \dots & 0 & 0 \\
+-l_{21} & 1 & 0 & \dots & 0 & 0 \\
+-l_{31} & 0 & 1 & \dots & 0 & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+-l_{n1} & 0 & 0 & \dots & 0 & 1
+\end{pmatrix}
+\]
+որտեղ $l_{i1} = \dfrac{a_{i1}}{a_{11}}$ ($i = 2, \dots, n$), երկրորդ քայլում դա հետևյալ մատրիցն է.
+\[
+M_2 = \begin{pmatrix}
+1 & 0 & 0 & \dots & 0 & 0 \\
+0 & 1 & 0 & \dots & 0 & 0 \\
+0 & -l_{32} & 1 & \dots & 0 & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & -l_{n2} & 0 & \dots & 0 & 1
+\end{pmatrix}
+\]
+որի $l_{i2}$ ($i = 3, \dots, n$) տարրերը կորոշվեն հետևյալ կերպ։
+
+Դիտարկենք հետևյալ մատրիցը.
+\[
+A_1 = M_1 A
+\]
+\[
+A_1 = \begin{pmatrix}
+a_{11} & a_{12} & a_{13} & \dots & a_{1n} \\
+-l_{21} a_{11} + a_{21} & -l_{21} a_{12} + a_{22} & -l_{21} a_{13} + a_{23} & \dots & -l_{21} a_{1n} + a_{2n} \\
+-l_{31} a_{11} + a_{31} & -l_{31} a_{12} + a_{32} & -l_{31} a_{13} + a_{33} & \dots & -l_{31} a_{1n} + a_{3n} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+-l_{n1} a_{11} + a_{n1} & -l_{n1} a_{12} + a_{n2} & -l_{n1} a_{13} + a_{n3} & \dots & -l_{n1} a_{1n} + a_{nn}
+\end{pmatrix}
+\]
+բայց քանի որ $-l_{i1} a_{11} + a_{i1} = -\dfrac{a_{i1}}{a_{11}} \cdot a_{11} + a_{i1} = 0$, ուստի $A_1$ մատրիցի առաջին սյան այն անդամները, որոնք գտնվում են գլխավոր անկյունագծի տակ, հավասար են զրո.
+\[
+A_1 = \begin{pmatrix}
+a_{11} & a_{12} & a_{13} & \dots & a_{1n} \\
+0 & -l_{21} a_{12} + a_{22} & -l_{21} a_{13} + a_{23} & \dots & -l_{21} a_{1n} + a_{2n} \\
+0 & -l_{31} a_{12} + a_{32} & -l_{31} a_{13} + a_{33} & \dots & -l_{31} a_{1n} + a_{3n} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & -l_{n1} a_{12} + a_{n2} & -l_{n1} a_{13} + a_{n3} & \dots & -l_{n1} a_{1n} + a_{nn}
+\end{pmatrix}
+\]
+Ստացված $A_1$ մատրիցից կկառուցվի $M_2$ մատրիցը.
+\[
+l_{i2} = \frac{a_{i2} - l_{i1} a_{12}}{-l_{21} a_{12} + a_{22}} \quad (i = 3, \dots, n)
+\]
+Դրանից հետո կառուցենք հետևյալ մատրիցը.
+\[
+A_2 = M_2 A_1
+\]
+
+\[
+\resizebox{\textwidth}{!}{$
+A_2 = \begin{pmatrix}
+a_{11} & a_{12} & a_{13} & \dots & a_{1n} \\
+0 & -l_{21} a_{12} + a_{22} & -l_{21} a_{13} + a_{23} & \dots & -l_{21} a_{1n} + a_{2n} \\
+0 & -l_{32}(-l_{21} a_{12} + a_{22}) - l_{31} a_{12} + a_{32} & -l_{32}(-l_{21} a_{13} + a_{23}) - l_{31} a_{13} + a_{33} & \dots & -l_{32}(-l_{21} a_{1n} + a_{2n}) - l_{31} a_{1n} + a_{3n} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & -l_{n2}(-l_{21} a_{12} + a_{22}) - l_{n1} a_{12} + a_{n2} & -l_{n2}(-l_{21} a_{13} + a_{23}) - l_{n1} a_{13} + a_{n3} & \dots & -l_{n2}(-l_{21} a_{1n} + a_{2n}) - l_{n1} a_{1n} + a_{nn}
+\end{pmatrix}
+$}
+\]
+
+Նկատենք, որ $A_2$ մատրիցի երկրորդ սյան այն անդամները, որոնք գտնվում են գլխավոր անկյունագծի տակ, հավասար են զրո.
+\begin{align*}
+&-l_{i2}(-l_{21} a_{12} + a_{22}) - l_{i1} a_{12} + a_{i2} \\
+&\qquad = -\frac{a_{i2} - l_{i1} a_{12}}{-l_{21} a_{12} + a_{22}} \cdot (-l_{21} a_{12} + a_{22}) - l_{i1} a_{12} + a_{i2} = 0
+\end{align*}
+այսինքն.
+\[
+\resizebox{\textwidth}{!}{$
+A_2 = \begin{pmatrix}
+a_{11} & a_{12} & a_{13} & \dots & a_{1n} \\
+0 & -l_{21} a_{12} + a_{22} & -l_{21} a_{13} + a_{23} & \dots & -l_{21} a_{1n} + a_{2n} \\
+0 & 0 & -l_{32}(-l_{21} a_{13} + a_{23}) - l_{31} a_{13} + a_{33} & \dots & -l_{32}(-l_{21} a_{1n} + a_{2n}) - l_{31} a_{1n} + a_{3n} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & -l_{n2}(-l_{21} a_{13} + a_{23}) - l_{n1} a_{13} + a_{n3} & \dots & -l_{n2}(-l_{21} a_{1n} + a_{2n}) - l_{n1} a_{1n} + a_{nn}
+\end{pmatrix}
+$}
+\]
+
+Շարունակելով այս գործընթացը՝ արդյունքում կստանանք
+\[
+A_{n-1} = M_{n-1} M_{n-2} \cdots M_2 M_1 A
+\]
+մատրիցը, որը կարող ենք ընդունել որպես $U$ մատրից։
+\[
+U = M_{n-1} M_{n-2} \cdots M_2 M_1 A
+\]
+Բազմապատկելով վերջին հավասարության ձախ և աջ մասերը ձախից
+\[
+M_1^{-1} \cdot M_2^{-1} \cdots M_{n-2}^{-1} M_{n-1}^{-1} = L
+\]
+մատրիցով՝ կստանանք.
+\[
+L \cdot U = A
+\]
+Բացի այդ՝ նկատենք, որ $M_i$ եռանկյունաձև մատրիցի անկյունագծային տարրերը հավասար են $1$-ի, ուստի $M_i^{-1}$ մատրիցները ևս եռանկյունաձև են, որոնց անկյունագծային տարրերը նույնպես $1$ են, հետևաբար $L = M_1^{-1} \cdot M_2^{-1} \cdots M_{n-1}^{-1}$-ը $1$-անկյունագծային տարրերով եռանկյունաձև (ստորին) մատրից է։
+
+\section{\texorpdfstring{$U^T \cdot U$ և $U^T \cdot D \cdot U$}{Uᵀ·U և Uᵀ·D·U} վերլուծություններ}
+
+Դիցուք $A = (a_{ij})_{n \times n}$ — սիմետրիկ մատրից է՝ $a_{ij} = a_{ji}$, $U$-ն վերին եռանկյունաձև մատրից է։ Այդ դեպքում $U^T \cdot U = A$ վերլուծությունը էլեմենտներով բացված կգրվի.
+\[
+\resizebox{\textwidth}{!}{$
+\begin{pmatrix}
+u_{11} & 0 & 0 & \dots & 0 \\
+u_{12} & u_{22} & 0 & \dots & 0 \\
+u_{13} & u_{23} & u_{33} & \dots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+u_{1,n-1} & u_{2,n-1} & u_{3,n-1} & \dots & 0 \\
+u_{1n} & u_{2n} & u_{3n} & \dots & u_{nn}
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+u_{11} & u_{12} & u_{13} & \dots & u_{1,n-1} & u_{1n} \\
+0 & u_{22} & u_{23} & \dots & u_{2,n-1} & u_{2n} \\
+0 & 0 & u_{33} & \dots & u_{3,n-1} & u_{3n} \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & 0 & \dots & 0 & u_{nn}
+\end{pmatrix}
+=
+\begin{pmatrix}
+a_{11} & a_{12} & a_{13} & \dots & a_{1n} \\
+a_{21} & a_{22} & a_{23} & \dots & a_{2n} \\
+a_{31} & a_{32} & a_{33} & \dots & a_{3n} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+a_{n1} & a_{n2} & a_{n3} & \dots & a_{nn}
+\end{pmatrix}
+$}
+\]
+Կատարելով բազմապատկում՝ կստանանք
+\[
+\left\{
+\begin{array}{r}
+u_{11}^2 = a_{11}; \; u_{11} u_{12} = a_{12}; \; u_{11} \cdot u_{13} = a_{13}; \; \dots; \; u_{11} u_{1n} = a_{1n} \\
+u_{12}^2 + u_{22}^2 = a_{22}; \; u_{12} u_{13} + u_{22} u_{23} = a_{23}; \; \dots; \; u_{12} u_{1n} + u_{22} u_{2n} = a_{2n} \\
+u_{13}^2 + u_{23}^2 + u_{33}^2 = a_{33}; \; \dots; \; u_{13} u_{1n} + u_{23} u_{2n} + u_{33} u_{3n} = a_{3n} \\
+\vdots\hspace{4cm} \\
+u_{1n}^2 + u_{2n}^2 + u_{3n}^2 + \dots + u_{nn}^2 = a_{nn}
+\end{array}
+\right.
+\]
+Ստացված համակարգի առաջին տողից կստանանք.
+\[
+u_{11} = \sqrt{a_{11}}, \qquad u_{1j} = \frac{a_{1j}}{u_{11}}, \quad j = 2, \dots, n
+\]
+
+Երկրորդ տողից՝
+\[
+u_{22} = \sqrt{a_{22} - u_{12}^2}, \qquad u_{2j} = \frac{a_{2j} - u_{12} u_{1j}}{u_{22}} \quad (j = 3, \dots, n)
+\]
+երրորդ տողից կստանանք՝
+\[
+u_{33} = \sqrt{a_{33} - u_{13}^2 - u_{23}^2}, \qquad u_{3j} = \frac{a_{3j} - u_{13} u_{1j} - u_{23} u_{2j}}{u_{33}} \quad (j = 4, \dots, n)
+\]
+և այլն։ Վերջին տողից կունենանք՝
+\[
+u_{nn} = \sqrt{a_{nn} - \sum_{j=1}^{n-1} u_{jn}^2}
+\]
+
+Ստացված արդյունքները կարելի է ներկայացնել հետևյալ բանաձևերով.
+\begin{align}
+u_{ii} &= \sqrt{a_{ii} - \sum_{k=1}^{i-1} u_{ki}^2}, \quad i = 1, \dots, n \\
+u_{ij} &= \frac{a_{ij} - \sum_{k=1}^{i-1} u_{ki} u_{kj}}{u_{ii}}, \quad j = 2, \dots, n, \; i < j
+\end{align}
+($u_{ij} = 0$, երբ $i > j$)։
+
+(3.1) և (3.2) բանաձևերով $A$ սիմետրիկ իրական մատրիցի $U^T \cdot U$ վերլուծությանը կարող են խանգարել երկու հանգամանք. ինչ-որ $i$-ի դեպքում $u_{ii} = 0$, կամ (3.1)-ի ենթարմատային արտահայտության բացասական լինելը։ Քանի որ $U^T \cdot U$ վերլուծությունը կարելի է դիտարկել որպես $LU$ վերլուծության մասնավոր դեպք, ուստի եթե պահանջենք, որ $A$ սիմետրիկ մատրիցը լինի դրականորեն որոշված (այսինքն՝ բոլոր գլխավոր մինորները դրական են), ապա § 2-ի թեորեմի համաձայն՝ այդ վերլուծությունը հնարավոր կլինի։ (3.1) և (3.2) բանաձևերով $U^T \cdot U$ վերլուծությունը կոչվում է Խոլեցկու վերլուծություն։
+
+\medskip
+\noindent\textbf{Օրինակ 1։} Դրականորեն որոշված
+\[
+A = \begin{pmatrix}
+1 & 2 & 3 \\
+2 & 13 & 9 \\
+3 & 9 & 14
+\end{pmatrix}
+\]
+սիմետրիկ մատրիցի համար $U^T \cdot U$ վերլուծությունը կլինի.
+\[
+\begin{pmatrix}
+1 & 0 & 0 \\
+2 & 3 & 0 \\
+3 & 1 & 2
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+1 & 2 & 3 \\
+0 & 3 & 1 \\
+0 & 0 & 2
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & 2 & 3 \\
+2 & 13 & 9 \\
+3 & 9 & 14
+\end{pmatrix}
+\]
+
+\medskip
+\noindent\textbf{Օրինակ 2։} Դրականորեն որոշված
+\[
+A = \begin{pmatrix}
+4 & 6 & -2 \\
+6 & 25 & 1 \\
+-2 & 1 & 27
+\end{pmatrix}
+\]
+սիմետրիկ մատրիցի համար $U^T \cdot U$ վերլուծությունը կլինի.
+\[
+\begin{pmatrix}
+2 & 0 & 0 \\
+3 & 4 & 0 \\
+-1 & 1 & 5
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+2 & 3 & -1 \\
+0 & 4 & 1 \\
+0 & 0 & 5
+\end{pmatrix}
+=
+\begin{pmatrix}
+4 & 6 & -2 \\
+6 & 25 & 1 \\
+-2 & 1 & 27
+\end{pmatrix}
+\]
+\medskip
+
+Այժմ քննության առնենք $A$ սիմետրիկ մատրիցի $U^T D U$ վերլուծությունը.
+\begin{equation}
+A = U^T D U
+\end{equation}
+որտեղ $U$-ն վերին եռանկյունաձև մատրից է, որի գլխավոր անկյունագծի տարրերը $1$ են, իսկ $D$-ն՝ անկյունագծային մատրից է։ Գրենք (3.3)-ը տարրերով.
+\begin{equation}
+\begin{aligned}
+&\begin{pmatrix}
+1 & 0 & 0 & \dots & 0 \\
+u_{12} & 1 & 0 & \dots & 0 \\
+u_{13} & u_{23} & 1 & \dots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+u_{1n} & u_{2n} & u_{3n} & \dots & 1
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+d_{11} & 0 & 0 & \dots & 0 \\
+0 & d_{22} & 0 & \dots & 0 \\
+0 & 0 & d_{33} & \dots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \dots & d_{nn}
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+1 & u_{12} & u_{13} & \dots & u_{1n} \\
+0 & 1 & u_{23} & \dots & u_{2n} \\
+0 & 0 & 1 & \dots & u_{3n} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \dots & 1
+\end{pmatrix} \\
+&\qquad =
+\begin{pmatrix}
+a_{11} & a_{12} & a_{13} & \dots & a_{1n} \\
+a_{12} & a_{22} & a_{23} & \dots & a_{2n} \\
+a_{13} & a_{23} & a_{33} & \dots & a_{3n} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+a_{1n} & a_{2n} & a_{3n} & \dots & a_{nn}
+\end{pmatrix}
+\end{aligned}
+\end{equation}
+$u_{ij}, d_{ii}$ — անհայտների ընդհանուր թիվը $\dfrac{n(n+1)}{2}$ է, որը հավասար է $A$-ի տարրերի թվին։
+
+(3.4)-ի մեջ կատարելով բազմապատկումները և հավասարեցնելով համապատասխան տարրերը (դեն նետելով կրկնվող հավասարումները)՝ կստանանք.
+\[
+\begin{array}{r}
+d_{11} = a_{11}; \; d_{11} u_{12} = a_{12}; \; d_{11} u_{13} = a_{13}; \; \dots; \; d_{11} u_{1n} = a_{1n} \\
+u_{12}^2 d_{11} + d_{22} = a_{22}; \; u_{12} u_{13} d_{11} + d_{22} u_{23} = a_{23}; \; \dots; \; u_{12} u_{1n} d_{11} + d_{22} u_{2n} = a_{2n} \\
+u_{13}^2 d_{11} + u_{23}^2 d_{22} + d_{33} = a_{33}; \; \dots; \; u_{13} u_{1n} d_{11} + u_{23} u_{2n} d_{22} + u_{3n} d_{33} = a_{3n} \\
+\vdots\hspace{4cm} \\
+u_{1n}^2 d_{11} + u_{2n}^2 d_{22} + \dots + u_{n-1,n}^2 d_{n-1,n-1} + d_{nn} = a_{nn}
+\end{array}
+\]
+Այստեղից հաջորդաբար գտնում ենք.
+\begin{gather*}
+d_{11} = a_{11}; \qquad u_{1j} = \frac{a_{1j}}{d_{11}} \quad (j = 2, \dots, n) \\
+d_{22} = a_{22} - u_{12}^2 d_{11}; \qquad u_{2j} = \frac{a_{2j} - u_{12} u_{1j} d_{11}}{d_{22}} \quad (j = 3, \dots, n) \\
+\vdots \\
+d_{nn} = a_{nn} - \sum_{k=1}^{n-1} u_{kn}^2 d_{kk}
+\end{gather*}
+
+Ստացված առնչությունները հակիրճ կարելի է գրել այսպես.
+\begin{equation}
+\left\{
+\begin{aligned}
+d_{ii} &= a_{ii} - \sum_{k=1}^{i-1} u_{ki}^2 d_{kk}, \quad i = 1, \dots, n \\
+u_{ij} &= \frac{a_{ij} - \sum_{k=1}^{i-1} u_{ki} u_{kj} d_{kk}}{d_{ii}}, \quad j = 2, \dots, n, \; i < j \\
+&\text{($u_{ij} = 0$, երբ $i > j$)}
+\end{aligned}
+\right.
+\end{equation}
+
+Ինչպես երևում է, $U^T \cdot D \cdot U$ վերլուծությունը չի պահանջում արմատ հանելու գործողություն, որն էապես ընդլայնում է այդ վերլուծության կիրառության սահմանները (ֆակտորիզացվող սիմետրիկ մատրիցը պարտադիր չէ, որ լինի դրականորեն որոշված)։
+
+\medskip
+\noindent\textbf{Օրինակ 3։} Տրված է
+\[
+A = \begin{pmatrix}
+25 & 5 & 5 \\
+5 & 10 & 4 \\
+5 & 4 & 1
+\end{pmatrix}
+\]
+սիմետրիկ մատրիցը։ Գտնենք դրա $U^T D U$ վերլուծությունը։
+
+Օգտվելով (3.5) բանաձևերից՝ հաջորդաբար հաշվենք $U$ և $D$ մատրիցների ոչ զրոյական տարրերը։
+\begin{align*}
+& d_{11} = a_{11} = 25; \qquad u_{12} = \frac{a_{12}}{d_{11}} = \frac{5}{25} = \frac{1}{5}; \qquad u_{13} = \frac{a_{13}}{d_{11}} = \frac{5}{25} = \frac{1}{5} \\
+& d_{22} = a_{22} - u_{12}^2 d_{11} = 10 - \frac{1}{25} \cdot 25 = 9 \\
+& u_{23} = \frac{a_{23} - u_{12} \cdot u_{13} \cdot d_{11}}{d_{22}} = \frac{4 - \frac{1}{25} \cdot 25}{9} = \frac{1}{3} \\
+& d_{33} = a_{33} - u_{13}^2 d_{11} - u_{23}^2 d_{22} = 1 - \frac{1}{25} \cdot 25 - \frac{1}{9} \cdot 9 = -1
+\end{align*}
+Այսպիսով, $A$ մատրիցի $U^T D U$ վերլուծությունն ունի հետևյալ տեսքը.
+\[
+\begin{pmatrix}
+25 & 5 & 5 \\
+5 & 10 & 4 \\
+5 & 4 & 1
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & 0 & 0 \\
+\frac{1}{5} & 1 & 0 \\
+\frac{1}{5} & \frac{1}{3} & 1
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+25 & 0 & 0 \\
+0 & 9 & 0 \\
+0 & 0 & -1
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+1 & \frac{1}{5} & \frac{1}{5} \\
+0 & 1 & \frac{1}{3} \\
+0 & 0 & 1
+\end{pmatrix}
+\]
+
+\medskip
+\noindent\textbf{Օրինակ 4։} Հանգունորեն կարելի է ստանալ
+\[
+A = \begin{pmatrix}
+2 & 4 & 6 \\
+4 & 11 & 24 \\
+6 & 24 & 71
+\end{pmatrix}
+\]
+սիմետրիկ մատրիցի հետևյալ $U^T D U$ վերլուծությունը.
+\[
+\begin{pmatrix}
+2 & 4 & 6 \\
+4 & 11 & 24 \\
+6 & 24 & 71
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & 0 & 0 \\
+2 & 1 & 0 \\
+3 & 4 & 1
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+2 & 0 & 0 \\
+0 & 3 & 0 \\
+0 & 0 & 5
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+1 & 2 & 3 \\
+0 & 1 & 4 \\
+0 & 0 & 1
+\end{pmatrix}
+\]
+\medskip
+
+Բանաձևերը, որոնց միջոցով $A$ սիմետրիկ մատրիցը ֆակտորիզացվում է $U^T \cdot D \cdot U$ տեսքի, էապես ստանում են պարզ տեսք, երբ $A$ մատրիցը եռանկյունագծային է։ Դա նշանակում է, որ $A$ մատրիցն ունի հետևյալ տեսքը.
+\[
+A = \begin{pmatrix}
+\alpha_1 & \beta_1 & 0 & 0 & \dots & 0 & 0 & 0 \\
+\beta_1 & \alpha_2 & \beta_2 & 0 & \dots & 0 & 0 & 0 \\
+0 & \beta_2 & \alpha_3 & \beta_3 & \dots & 0 & 0 & 0 \\
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+0 & 0 & 0 & 0 & \dots & \beta_{n-2} & \alpha_{n-1} & \beta_{n-1} \\
+0 & 0 & 0 & 0 & \dots & 0 & \beta_{n-1} & \alpha_n
+\end{pmatrix}
+\]
+Փնտրում ենք այնպիսի
+\[
+U = \begin{pmatrix}
+1 & u_1 & 0 & 0 & \dots & 0 & 0 & 0 \\
+0 & 1 & u_2 & 0 & \dots & 0 & 0 & 0 \\
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+0 & 0 & 0 & 0 & \dots & 0 & 1 & u_{n-1} \\
+0 & 0 & 0 & 0 & \dots & 0 & 0 & 1
+\end{pmatrix},
+\qquad
+D = \begin{pmatrix}
+d_1 & 0 & \dots & 0 & 0 \\
+0 & d_2 & \dots & 0 & 0 \\
+\vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & \dots & d_{n-1} & 0 \\
+0 & 0 & \dots & 0 & d_n
+\end{pmatrix}
+\]
+մատրիցներ, որ $U^T D U = A$։
+
+Իրականացնենք այդ մատրիցների բազմապատկումը.
+\begin{align*}
+&\begin{pmatrix}
+1 & 0 & 0 & \dots & 0 & 0 & 0 \\
+u_1 & 1 & 0 & \dots & 0 & 0 & 0 \\
+0 & u_2 & 1 & \dots & 0 & 0 & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+0 & 0 & 0 & \dots & u_{n-2} & 1 & 0 \\
+0 & 0 & 0 & \dots & 0 & u_{n-1} & 1
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+d_1 & 0 & 0 & \dots & 0 & 0 \\
+0 & d_2 & 0 & \dots & 0 & 0 \\
+0 & 0 & d_3 & \dots & 0 & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & 0 & \dots & d_{n-1} & 0 \\
+0 & 0 & 0 & \dots & 0 & d_n
+\end{pmatrix} \\
+&\quad \cdot
+\begin{pmatrix}
+1 & u_1 & 0 & \dots & 0 & 0 & 0 \\
+0 & 1 & u_2 & \dots & 0 & 0 & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+0 & 0 & 0 & \dots & 0 & 1 & u_{n-1} \\
+0 & 0 & 0 & \dots & 0 & 0 & 1
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & 0 & 0 & \dots & 0 & 0 & 0 \\
+u_1 & 1 & 0 & \dots & 0 & 0 & 0 \\
+0 & u_2 & 1 & \dots & 0 & 0 & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+0 & 0 & 0 & \dots & u_{n-2} & 1 & 0 \\
+0 & 0 & 0 & \dots & 0 & u_{n-1} & 1
+\end{pmatrix} \\
+&\quad \cdot
+\begin{pmatrix}
+d_1 & u_1 d_1 & 0 & 0 & \dots & 0 & 0 \\
+0 & d_2 & u_2 d_2 & 0 & \dots & 0 & 0 \\
+0 & 0 & d_3 & u_3 d_3 & \dots & 0 & 0 \\
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & 0 & 0 & \dots & d_{n-1} & u_{n-1} d_{n-1} \\
+0 & 0 & 0 & 0 & \dots & 0 & d_n
+\end{pmatrix} \\
+&=
+\begin{pmatrix}
+d_1 & u_1 d_1 & 0 & 0 & \dots & 0 & 0 & 0 \\
+u_1 d_1 & u_1^2 d_1 + d_2 & u_2 d_2 & 0 & \dots & 0 & 0 & 0 \\
+0 & u_2 d_2 & u_2^2 d_2 + d_3 & u_3 d_3 & \dots & 0 & 0 & 0 \\
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+0 & 0 & 0 & 0 & \dots & u_{n-2} d_{n-2} & u_{n-2}^2 d_{n-2} + d_{n-1} & u_{n-1} d_{n-1} \\
+0 & 0 & 0 & 0 & \dots & 0 & u_{n-1} d_{n-1} & u_{n-1}^2 d_{n-1} + d_n
+\end{pmatrix}
+\end{align*}
+
+Հավասարեցնելով $A$ մատրիցի համապատասխան տարրերի հետ՝ կստանանք.
+\begin{equation}
+\left\{
+\begin{array}{r}
+d_1 = \alpha_1; \quad u_1 d_1 = \beta_1 \\
+u_1^2 d_1 + d_2 = \alpha_2; \quad u_2 d_2 = \beta_2 \\
+u_2^2 d_2 + d_3 = \alpha_3; \quad u_3 d_3 = \beta_3 \\
+\vdots\hspace{3cm} \\
+u_{n-2}^2 d_{n-2} + d_{n-1} = \alpha_{n-1}; \quad u_{n-1} d_{n-1} = \beta_{n-1} \\
+u_{n-1}^2 d_{n-1} + d_n = \alpha_n
+\end{array}
+\right.
+\end{equation}
+
+Նկատենք, որ $d_i$ և $u_i$ անհայտների ընդհանուր թիվը $n + (n - 1) = 2n - 1$ է, այդքան էլ $A$-ի մեջ $\alpha_i, \beta_i$ թվերի քանակն է։ (3.6)-ում առկա բանաձևերը կարելի է գրել հետևյալ անդրադարձ առնչություններով.
+\begin{equation}
+d_1 = \alpha_1; \quad u_i = \frac{\beta_i}{d_i} \; (i = 1, \dots, n - 1); \quad d_i = \alpha_i - u_{i-1}^2 d_{i-1} \; (i = 2, \dots, n)
+\end{equation}
+
+Ինչպես $LU$ վերլուծության մեջ, այնպես էլ $U^T D U$ վերլուծությունն իրականացնելու համար, պետք է բավարարված լինի §~2-ի թեորեմում նշված պայմանը. սիմետրիկ մատրիցի բոլոր գլխավոր մինորները պետք է լինեն զրոյից տարբեր։
+
+\section{Հաուսհոլդերի ձևափոխություն և \texorpdfstring{$QR$}{QR} վերլուծություն}
+
+Դիցուք $w$-ն $\mathbb{R}^n$ էվկլիդյան տարածության ինչ-որ ֆիքսված վեկտոր է (սյուն) այնպես, որ
+\begin{equation}\label{eq:hw_norm}
+\|w\| = \sqrt{(w; w)} = \sqrt{w^T \cdot w} = 1
+\end{equation}
+Այդ $w$ վեկտորի միջոցով սահմանված $n \times n$ չափանի հետևյալ մատրիցը
+\begin{equation}\label{eq:householder_H}
+H = E - 2 w \cdot w^T
+\end{equation}
+կոչվում է Հաուսհոլդերի մատրից։
+
+Որպեսզի բացահայտենք $H$ մատրիցի միջոցով իրականացվող Հաուսհոլդերի ձևափոխության պարզագույն երկրաչափական հատկությունները, դիտարկենք այդ ձևափոխությամբ իրականացվող կամայական $x \in \mathbb{R}^n$ վեկտորի պատկերը.
+\begin{equation}\label{eq:householder_y}
+y = Hx = x - 2 w w^T x = x - 2 w (w^T \cdot x) = x - 2 (x; w) w
+\end{equation}
+
+Եթե $x$-ը համագիծ է $w$-ին, այսինքն՝ $x = \alpha w$, որտեղ $\alpha \ne 0$ հաստատուն է, ապա \eqref{eq:hw_norm}-ի համաձայն՝ $(x; w) = (\alpha w; w) = \alpha (w; w) = \alpha$։ Այդ դեպքում \eqref{eq:householder_y}-ից կունենանք.
+\[
+y = x - 2 \alpha w = x - 2x = -x
+\]
+Իսկ եթե $x$ վեկտորն ուղղահայաց է $w$-ին, այսինքն՝ $(x; w) = 0$, ապա \eqref{eq:householder_y}-ից ստանում ենք $y = x$։
+
+Այսպիսով, Հաուսհոլդերի ձևափոխությունը $n$-չափանի էվկլիդյան տարածության վեկտորների վրա ազդում է հետևյալ կերպ. վեկտորները, որոնք ուղղահայաց են Հաուսհոլդերի \eqref{eq:householder_H} մատրիցը որոշող $w$ վեկտորին, թողնում է անփոփոխ, իսկ վեկտորները, որոնք համագիծ են $w$-ին, փոխակերպում է հակադիր վեկտորների՝ անդրադարձնում է։ Այստեղից էլ ծագում են $H$ մատրիցի և դրան համապատասխանող ձևափոխության այլ անվանումներ. անդրադարձման մատրից և անդրադարձման ձևափոխություն։
+
+$w$ վեկտորը $w^T$ վեկտորով անմիջական բազմապատկումով ստանում ենք
+\[
+w w^T = \begin{pmatrix}
+w_1 \\
+w_2 \\
+\vdots \\
+w_n
+\end{pmatrix}
+\begin{pmatrix}
+w_1 & w_2 & \dots & w_n
+\end{pmatrix}
+=
+\begin{pmatrix}
+w_1^2 & w_1 w_2 & \dots & w_1 w_n \\
+w_2 w_1 & w_2^2 & \dots & w_2 w_n \\
+\vdots & \vdots & \ddots & \vdots \\
+w_n w_1 & w_n w_2 & \dots & w_n^2
+\end{pmatrix}
+\]
+Ակնհայտ է, որ $w w^T$-ն սիմետրիկ մատրից է (դա նաև կարելի է ստանալ առանց բազմապատկումն իրականացնելու. $(w w^T)^T = (w^T)^T \cdot w^T = w w^T$), որտեղից էլ հետևում է, որ $H$ մատրիցը սիմետրիկ է։ Օգտվելով դրանից՝ կունենանք.
+\begin{align*}
+H H^T &= H H = (E - 2 w w^T)(E - 2 w w^T) ={} \\
+      &= E - 2 (Ew) w^T - 2 w (w^T E) + 4 w (w^T w) w^T ={} \\
+      &= E - 2 w w^T - 2 w w^T + 4 (w \cdot 1) w^T ={} \\
+      &= E - 4 w w^T + 4 w w^T = E
+\end{align*}
+
+Ստացված $H \cdot H^T = E$ առնչությունը նշանակում է, որ $H$ Հաուսհոլդերի մատրիցը օրթոգոնալ մատրից է։
+
+Օրթոգոնալ ձևափոխությունների կարևորագույն հատկություններից մեկը դա վեկտորի երկարության պահպանումն է այդ ձևափոխության արդյունքում։ Այդ հատկության շնորհիվ կունենանք.
+\begin{equation}\label{eq:householder_norm}
+\|y\| = \|Hx\| = \|x\|, \quad \forall x \in \mathbb{R}^n
+\end{equation}
+
+Հաուսհոլդերի ձևափոխությունների կիրառմամբ որոշակի նպատակների հասնելու համար $w$ վեկտորների ընտրության հարցում \eqref{eq:householder_norm} հավասարությունը էական դեր է խաղում։ Դիցուք պետք է կառուցել Հաուսհոլդերի այնպիսի մատրից, որը տրված ոչ զրոյական $x = (x_1; x_2; \dots; x_n)^T$ վեկտորը կձևափոխի $y$ վեկտորի, որը համագիծ է $e_1$ օրթ վեկտորին, այսինքն՝
+\[
+y = y_1 e_1 = (y_1; 0; \dots; 0)^T
+\]
+վեկտորի։ \eqref{eq:householder_norm}-ի համաձայն՝
+\[
+\|y\| = |y_1| = \|x\|
+\]
+որտեղից հետևում է, որ $y_1 = \pm \|x\|$ և, հետևաբար, $y = \pm \|x\| e_1$։ Տեղադրելով ստացվածը \eqref{eq:householder_y}-ի մեջ՝ կունենանք.
+\[
+\pm \|x\| e_1 = x - 2 (x; w) w
+\]
+կամ
+\[
+2 (x; w) w = x \mp \|x\| e_1
+\]
+
+Քանի որ վերջին առնչության մեջ $(x; w)$ սկալյար է, ապա կարելի է ասել, որ
+\begin{equation}\label{eq:w_tilde}
+\tilde{w} = x \mp \|x\| e_1
+\end{equation}
+վեկտորը (ճիշտ կլիներ ասել՝ դրանցից ցանկացածը) տալիս է անհրաժեշտ վեկտորի ուղղությունը։ Անհրաժեշտ է այն բերել միավոր երկարության, ինչը պահանջվում է \eqref{eq:hw_norm} սկզբնական պայմանով։ Այսպիսով, կարելի է վերցնել
+\begin{equation}\label{eq:w_normalized}
+w = \frac{\tilde{w}}{\|\tilde{w}\|} = \frac{\tilde{w}}{\sqrt{(\tilde{w}; \tilde{w})}}
+\end{equation}
+
+\eqref{eq:w_tilde}-ի մեջ առկա երկու վեկտորներից ընտրվում է այն մեկը, որ հաշվման պրոցեսը լինի առավել կայուն։ Դրա համար $\tilde{w}$-ի բանաձևի մեջ նշանը ընտրում են այնպես, որի արդյունքում հանում տեղի չունենա, այսինքն՝ բացառում են մոտիկ թվերի հանման պարագայում էական թվանշանների կորուստը։ Դրան հասնելու համար վերցնենք.
+\begin{equation}\label{eq:w_tilde_choice}
+\tilde{w} = (x_1 - \beta; x_2; \dots; x_n)^T
+\end{equation}
+որտեղ
+\begin{equation}\label{eq:beta_def}
+\beta = \operatorname{sgn}(-x_1) \|x\| = \operatorname{sgn}(-x_1) \sqrt{\sum_{i=1}^n x_i^2}
+\end{equation}
+
+$\tilde{w}$-ի նորմը հեշտ հաշվելու համար, որը հարկավոր է \eqref{eq:w_normalized}-ի մեջ, կարելի է օգտվել արդեն հաշված $\beta$-ի արժեքից։ Իրոք.
+\begin{equation}\label{eq:w_tilde_norm_sq}
+\|\tilde{w}\|^2 = (x_1 - \beta)^2 + x_2^2 + \dots + x_n^2 = \sum_{i=1}^n x_i^2 - 2 x_1 \beta + \beta^2
+\end{equation}
+Բայց \eqref{eq:beta_def}-ից հետևում է, որ $\beta^2 = \sum_{i=1}^n x_i^2$, հետևաբար \eqref{eq:w_tilde_norm_sq}-ից կունենանք.
+\begin{equation}\label{eq:w_tilde_norm_final}
+\|\tilde{w}\|^2 = 2\beta^2 - 2\beta x_1
+\end{equation}
+
+Այսպիսով, վերը արված դատողությունների արդյունքը հետևյալն է։
+
+Եթե $H = E - 2 w w^T$ Հաուսհոլդերի մատրիցը կառուցվի $w = \mu \cdot (x_1 - \beta; x_2; \dots; x_n)^T$ վեկտորի օգնությամբ, որտեղ $\beta = \operatorname{sgn}(-x_1) \|x\|$, $\mu = \dfrac{1}{\sqrt{2\beta^2 - 2\beta x_1}}$, ապա տրված ոչ զրոյական $x = (x_1; x_2; \dots; x_n)^T$ վեկտորը $H$ մատրիցի միջոցով կձևափոխվի մի վեկտորի, որի բոլոր կոորդինատները, բացի առաջինից, զրո են, ընդ որում, այդ առաջին կոորդինատը, ակնհայտորեն, կարող ենք համարել $\beta$-ն (այսինքն՝ կձևափոխվի $Hx = (\beta; 0; \dots; 0)^T$ վեկտորի)։
+
+\medskip
+\noindent\textbf{Օրինակ 5։}
+\[
+x = \begin{pmatrix}
+x_1 \\
+x_2 \\
+x_3
+\end{pmatrix}
+= \begin{pmatrix}
+2 \\
+-2 \\
+1
+\end{pmatrix}
+\]
+վեկտորի վրա դիտարկենք դրա $y$ վեկտորի ձևափոխության գործընթացը, որի երկրորդ և երրորդ տեղերում զրոներ են։
+
+Ունենք.
+\begin{gather*}
+\|x\| = \sqrt{4 + 4 + 1} = 3 \\
+\beta = \operatorname{sgn}(-x_1)\|x\| = -3 \\
+\mu = \frac{1}{\sqrt{2\beta^2 - 2\beta x_1}} = \frac{1}{\sqrt{2 \cdot 9 + 12}} = \frac{1}{\sqrt{30}} \\
+w = \frac{1}{\sqrt{30}} \cdot \begin{pmatrix} x_1 - \beta \\ x_2 \\ x_3 \end{pmatrix} = \frac{1}{\sqrt{30}} \begin{pmatrix} 5 \\ -2 \\ 1 \end{pmatrix}, \qquad w^T = \frac{1}{\sqrt{30}}(5; -2; 1) \\
+w w^T = \frac{1}{30} \begin{pmatrix} 5 \\ -2 \\ 1 \end{pmatrix} (5; -2; 1) = \frac{1}{30} \begin{pmatrix} 25 & -10 & 5 \\ -10 & 4 & -2 \\ 5 & -2 & 1 \end{pmatrix}
+\end{gather*}
+\begin{align*}
+H &= E - 2 w w^T = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix} - \frac{1}{15} \begin{pmatrix} 25 & -10 & 5 \\ -10 & 4 & -2 \\ 5 & -2 & 1 \end{pmatrix} ={} \\
+  &= \frac{1}{15} \begin{pmatrix} -10 & 10 & -5 \\ 10 & 11 & 2 \\ -5 & 2 & 14 \end{pmatrix}
+\end{align*}
+Այդ դեպքում
+\[
+y = Hx = \frac{1}{15} \begin{pmatrix} -10 & 10 & -5 \\ 10 & 11 & 2 \\ -5 & 2 & 14 \end{pmatrix} \begin{pmatrix} 2 \\ -2 \\ 1 \end{pmatrix} = \frac{1}{15} \begin{pmatrix} -45 \\ 0 \\ 0 \end{pmatrix} = \begin{pmatrix} -3 \\ 0 \\ 0 \end{pmatrix}
+\]
+Նկատենք, քանի որ $H$-ը օրթոգոնալ և սիմետրիկ մատրից է, ուստի $H^{-1} = H$, հետևաբար կարող ենք $y$-ից, հակառակը ձևափոխելով, ստանալ $x$-ը.
+\[
+x = Hy = \frac{1}{15} \begin{pmatrix} -10 & 10 & -5 \\ 10 & 11 & 2 \\ -5 & 2 & 14 \end{pmatrix} \begin{pmatrix} -3 \\ 0 \\ 0 \end{pmatrix} = \frac{1}{15} \begin{pmatrix} 30 \\ -30 \\ 15 \end{pmatrix} = \begin{pmatrix} 2 \\ -2 \\ 1 \end{pmatrix}
+\]
+\medskip
+
+Այժմ դիտարկենք հետևյալ խնդիրը. օրթոգոնալ ձևափոխությունների միջոցով $n \times n$ չափանի $A = (a_{ij})$ մատրիցը բերել եռանկյունաձև տեսքի։ Այլ խոսքով՝ իրականացնել $A$ մատրիցի $QR$ վերլուծություն, այսինքն՝ նկարագրել գործընթաց, որի միջոցով կստանանք
+\begin{equation}\label{eq:qr_decomp}
+A = QR
+\end{equation}
+հավասարությունը, որտեղ $Q$-ն օրթոգոնալ մատրից է, իսկ $R$-ը՝ աջ եռանկյունաձև։
+
+Կլուծենք այս խնդիրը փուլերով։
+
+Նախորդ դատողություններում օգտագործվող $x$ վեկտորի դերը վերագրենք $A$ մատրիցի առաջին սյանը՝ $(a_{11}; a_{21}; \dots; a_{n1})^T$։ Այդ դեպքում կառուցենք Հաուսհոլդերի
+\[
+H_1 = E - 2 w_1 w_1^T
+\]
+մատրիցը հետևյալ վեկտորի
+\[
+w_1 = \mu_1 \cdot (a_{11} - \beta_1; a_{21}; \dots; a_{n1})^T
+\]
+և
+\[
+\beta_1 = \operatorname{sgn}(-a_{11}) \sqrt{\sum_{k=1}^n a_{k1}^2}; \qquad \mu_1 = \frac{1}{\sqrt{2\beta_1^2 - 2\beta_1 a_{11}}}
+\]
+սկալյարների օգնությամբ և, կիրառելով այն $A$ մատրիցի վրա, կստանանք
+\[
+A_1 = H_1 A
+\]
+մատրիցը, որի առաջին սյան բոլոր անդամները, սկսած երկրորդից, զրո են, այսինքն.
+
+\[
+A_1 = \begin{pmatrix}
+a_{11}^{(1)} & a_{12}^{(1)} & \dots & a_{1n}^{(1)} \\
+0 & a_{22}^{(1)} & \dots & a_{2n}^{(1)} \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & a_{n2}^{(1)} & \dots & a_{nn}^{(1)}
+\end{pmatrix}
+\]
+(որտեղ $a_{11}^{(1)} = \beta_1$)։
+
+Երկրորդ փուլում նույն ձևով պետք է վարվել $A_1$ մատրիցի $(n-1) \times (n-1)$ չափի այն ենթամատրիցի հետ, որը ստացվում է $A_1$-ում առաջին տողը և սյունը մաքրելուց։ Հեշտ է ստուգել, որ դա համարժեք է ամբողջ $A_1$ մատրիցի վրա Հաուսհոլդերի $H_2$ մատրիցի կիրառմանը, որտեղ $H_2$-ը որոշվում է
+\[
+H_2 = E - 2 w_2 w_2^T
+\]
+որտեղ
+\begin{gather*}
+w_2 = \mu_2 \cdot \left(0; a_{22}^{(1)} - \beta_2; a_{32}^{(1)}; \dots; a_{n2}^{(1)}\right)^T \\
+\beta_2 = \operatorname{sgn}\left(-a_{22}^{(1)}\right) \sqrt{\sum_{k=2}^n \left(a_{k2}^{(1)}\right)^2}; \qquad \mu_2 = \frac{1}{\sqrt{2\beta_2^2 - 2\beta_2 a_{22}^{(1)}}}
+\end{gather*}
+
+Դրանում համոզվելու համար նկատենք, որ $H_2$ մատրիցն ունի հետևյալ կառուցվածքը.
+\[
+\begin{pmatrix}
+1 & 0 & 0 & \dots & 0 \\
+0 & * & * & \dots & * \\
+0 & * & * & \dots & * \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & * & * & \dots & *
+\end{pmatrix}
+\]
+որտեղից էլ հետևում է, որ $H_2 A_1 = A_2$ ձևափոխությունն իրականացնելիս $A_1$-ի առաջին տողն ու սյունը մնում են անփոփոխ։
+
+Առաջին երկու փուլերի արդյունքը հետևյալ մատրիցն է.
+\[
+A_2 = H_2 H_1 A = \begin{pmatrix}
+a_{11}^{(1)} & a_{12}^{(1)} & a_{13}^{(1)} & \dots & a_{1n}^{(1)} \\
+0 & a_{22}^{(2)} & a_{23}^{(2)} & \dots & a_{2n}^{(2)} \\
+0 & 0 & a_{33}^{(2)} & \dots & a_{3n}^{(2)} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & a_{n3}^{(2)} & \dots & a_{nn}^{(2)}
+\end{pmatrix}
+\]
+
+Պարզ է, որ տրված $n \times n$ չափանի $A$ մատրիցը եռանկյունաձև տեսքի բերելու համար կարիք կլինի իրականացնել $(n - 1)$ հատ այդպիսի փուլեր, ընդ որում՝ $i$-րդ փուլը որոշվում է հետևյալ բանաձևերով.
+
+\begin{equation}\label{eq:phase_i_H}
+\left.
+\begin{aligned}
+H_i &= E - 2 w_i w_i^T \\
+w_i &= \mu_i \left(0; 0; \dots; 0; a_{ii}^{(i-1)} - \beta_i; a_{i+1,i}^{(i-1)}; \dots; a_{ni}^{(i-1)}\right)^T
+\end{aligned}
+\right\}
+\end{equation}
+\begin{equation}\label{eq:phase_i_params}
+\left.
+\begin{aligned}
+\beta_i &= \operatorname{sgn}\left(-a_{ii}^{(i-1)}\right) \sqrt{\sum_{k=i}^n \left(a_{ki}^{(i-1)}\right)^2} \\
+\mu_i &= \frac{1}{\sqrt{2\beta_i^2 - 2\beta_i a_{ii}^{(i-1)}}}
+\end{aligned}
+\right\}
+\end{equation}
+
+$(n - 1)$ հատ փուլերից կազմված ողջ գործընթացի արդյունքը
+\begin{equation}\label{eq:R_product}
+R = A_{n-1} = H_{n-1} H_{n-2} \cdots H_2 H_1 A = Q^T A
+\end{equation}
+տեսքի եռանկյունաձև մատրիցն է, որտեղ $Q^T = H_{n-1} H_{n-2} \cdots H_2 H_1$ օրթոգոնալ մատրից է (որպես օրթոգոնալ մատրիցների արտադրյալ)։ Հաշվի առնելով, որ $(Q^T)^{-1} = (Q^T)^T = Q = H_1 H_2 \cdots H_{n-1}$, ապա \eqref{eq:R_product}-ից կստանանք պահանջվող ֆակտորիզացիան.
+\[
+A = QR
+\]
+
+\medskip
+\noindent\textbf{Դիտողություն 1։} $i$-րդ փուլի իրականացման համար միակ խոչընդոտ կարող է հանդիսանալ $\mu_i^2$ արտահայտության հայտարարի զրո լինելը։ Սակայն այդ հայտարարը հանդիսանում է
+\[
+\tilde{w}_i = \left(0; 0; \dots; 0; a_{ii}^{(i-1)} - \beta_i; a_{i+1,i}^{(i-1)}; \dots; a_{ni}^{(i-1)}\right)^T
+\]
+վեկտորի նորմի քառակուսին, և դրա զրո լինելը համարժեք է նրան, որ $\tilde{w}_i$ — զրոյական վեկտոր է։ Հետևաբար, եթե $A$ մատրիցի $QR$ ֆակտորիզացիայի գործընթացում հաշվի ենք առնում այն հանգամանքը, որ մեզանից անկախ անտեսում ենք (չենք ենթարկում ձևափոխության) այն սյուները, որոնք տվյալ փուլում արդեն ունեն պահանջվող տեսքը, այսինքն՝ դրանցում անկյունագծից ներքև զրոներ են (հնարավոր է նաև՝ հենց անկյունագծի էլեմենտն է զրո), ապա զրոյի վրա բաժանում տեղի ունենալ չի կարող։
+\medskip
+
+Այսպիսով, ճիշտ է հետևյալ թեորեմը։
+
+\medskip
+\noindent\textbf{Թեորեմ 1 ($QR$ վերլուծության մասին)։} \textit{Հաուսհոլդերի ձևափոխությունների միջոցով ցանկացած քառակուսային (իրական) մատրից կարելի է ներկայացնել օրթոգոնալ և աջ եռանկյունաձև մատրիցների (իրական) արտադրյալի տեսքով։}
+\medskip
+
+\noindent\textbf{Դիտողություն 2։} Հաուսհոլդերի մատրիցի կառուցման պրոցեսից արդեն պարզ է, որ $QR$ վերլուծությունը, ընդհանրապես ասած, միակը չէ (ուշադրություն դարձնել \eqref{eq:w_tilde} հավասարության երկարժեք լինելուն)։ Եթե հաշվի առնենք, որ $QR$ ֆակտորիզացիայի պրոցեսում բացի անդրադարձման ձևափոխությունից կարելի է օգտագործել նաև այլ օրթոգոնալ ձևափոխություններ, օրինակ՝ հարթ պտույտներ, հարց է առաջանում այն մասին, թե որքան էականորեն են տարբերվում տրված քառակուսային մատրիցի տարբեր $QR$ վերլուծությունները։ Այդ հարցի պատասխանը տրվում է հետևյալ պնդումով.
+
+\medskip
+\noindent\textbf{Թեորեմ 2։} \textit{Եթե $A$ չվերասերված իրական մատրիցի համար տեղի ունեն երկու $QR$ վերլուծություններ՝ $A = Q_1 R_1$ և $A = Q_2 R_2$, ապա $Q_1$ և $Q_2$ օրթոգոնալ մատրիցները կարող են տարբերվել միայն սյուների էլեմենտների նշաններով, իսկ աջ եռանկյունաձև $R_1$ և $R_2$ մատրիցները՝ միայն տողերի էլեմենտների նշաններով։}
+\medskip
+
+\noindent\textbf{Ապացույց։} Ըստ պայմանի՝
+\begin{equation}\label{eq:qr_two}
+A = Q_1 R_1 = Q_2 R_2
+\end{equation}
+Ինչպես հայտնի է, $Q_1$ և $Q_2$ օրթոգոնալ մատրիցները չվերասերված են։ Քանի որ պայմանի համաձայն $A$-ն չվերասերված մատրից է, ուստի \eqref{eq:qr_two}-ից հետևում է, որ $R_1$ և $R_2$ մատրիցները ևս չվերասերված են։ Այդ դեպքում \eqref{eq:qr_two}-ից կունենանք.
+\begin{gather}
+Q_2^{-1} Q_1 R_1 = R_2 \notag \\
+Q_2^{-1} Q_1 = R_2 R_1^{-1} \label{eq:qr_unique}
+\end{gather}
+
+\eqref{eq:qr_unique}-ի ձախ մասը, որպես օրթոգոնալ մատրիցների արտադրյալ, օրթոգոնալ է։ Նշանակենք այն $S = Q_2^{-1} Q_1$։
+
+Մյուս կողմից $R_1$-ը աջ եռանկյունաձև մատրից է, ուստի դրա հակադարձը ևս աջ եռանկյունաձև մատրից է, հետևաբար \eqref{eq:qr_unique}-ի աջ մասը ևս աջ եռանկյունաձև մատրից է։ Այսպիսով, $S$-ը միաժամանակ օրթոգոնալ և աջ եռանկյունաձև մատրից է։
+
+Քանի որ $S$-ը աջ եռանկյունաձև մատրից է, ուստի դրա $j$-րդ սյունն ունի
+\[
+s_j = (s_{1j}; s_{2j}; \dots; s_{jj}; 0; 0; \dots; 0)^T
+\]
+տեսքը։ Մյուս կողմից $S$-ը օրթոգոնալ մատրից է, այսինքն՝ $S$-ի յուրաքանչյուր սյան նորմը $1$ է, և սյուները զույգ առ զույգ ուղղահայաց են։ Առաջին սյան համար. $s_1 = (s_{11}; 0; 0; \dots; 0)^T$, $\|s_1\| = 1 \implies s_{11}^2 = 1 \implies s_{11} = \pm 1$։ Երկրորդ սյան համար. $s_2 = (s_{12}; s_{22}; 0; \dots; 0)^T$, իսկ օրթոգոնալության $s_1 \cdot s_2 = 0$ պայմանից հետևում է $s_{11} \cdot s_{12} = 0 \implies s_{12} = 0$ ($s_{11} = \pm 1$)։ Մյուս կողմից $\|s_2\| = 1$-ից հետևում է $s_{22} = \pm 1$։
+
+Մաթեմատիկական ինդուկցիայով ապացուցենք, որ $S$-ը անկյունագծային մատրից է, որի անկյունագծային տարրերը $\pm 1$ են։ Ենթադրենք՝
+\[
+s_1 = (s_{11}; 0; 0; \dots; 0)^T; \quad s_2 = (0; s_{22}; 0; \dots; 0)^T; \quad \dots; \quad s_j = (0; 0; \dots; 0; s_{jj}; 0; \dots; 0)^T
+\]
+և
+\[
+s_{j+1} = (s_{1,j+1}; s_{2,j+1}; \dots; s_{j,j+1}; s_{j+1,j+1}; 0; \dots; 0)^T
+\]
+Քանի որ $s_k \cdot s_{j+1} = 0$ ($k = 1, 2, \dots, j$), ուստի
+\begin{gather*}
+s_{11} \cdot s_{1,j+1} = 0; \quad s_{22} \cdot s_{2,j+1} = 0; \quad \dots; \quad s_{jj} \cdot s_{j,j+1} = 0 \implies \\
+\implies s_{1,j+1} = s_{2,j+1} = \dots = s_{j,j+1} = 0 \quad (s_{kk} = \pm 1)
+\end{gather*}
+Ստացվեց
+\[
+s_{j+1} = (0; 0; \dots; 0; s_{j+1,j+1}; 0; \dots; 0)^T
+\]
+Մյուս կողմից՝ $\|s_{j+1}\| = 1 \implies s_{j+1,j+1} = \pm 1$։ Այսպիսով,
+\[
+S = \operatorname{diag}(\sigma_1; \sigma_2; \dots; \sigma_n), \qquad \sigma_i \in \{-1; 1\}
+\]
+
+Այժմ անցնենք $Q$ և $R$ մատրիցներին։ $Q_2^{-1} \cdot Q_1 = S$-ից հետևում է, որ $Q_1 = Q_2 S$։ $Q_2$ մատրիցն աջից $S$ անկյունագծային մատրիցով բազմապատկելու դեպքում ստացված $Q_1$ մատրիցի $j$-րդ սյունը հավասար է $Q_2$ մատրիցի $j$-րդ սյանը՝ բազմապատկած $\sigma_j = \pm 1$-ով։
+
+$R_2 \cdot R_1^{-1} = S$-ից հետևում է, որ $R_2 = S R_1$։ $R_1$ մատրիցը ձախից $S$ անկյունագծային մատրիցով բազմապատկելու դեպքում ստացված $R_2$ մատրիցի $i$-րդ տողը հավասար է $R_1$ մատրիցի $i$-րդ տողին՝ բազմապատկած $\sigma_i = \pm 1$-ով։
+
+\medskip
+\noindent\textbf{Դիտողություն 3։} Ինչպես երևում է, ի տարբերություն $LU$ վերլուծության, $QR$ վերլուծությունը կարելի է կիրառել նաև վերասերված մատրիցների համար։ $QR$ ֆակտորիզացիայի $i$-րդ փուլում $i$-րդ սյան անկյունագծի վրա գտնվող տարրի զրո լինելու պարագայում, երբ նրանում կան ոչ զրոյական էլեմենտներ անկյունագծի տակ, ակնհայտորեն նշանակում է $\beta_i$ և $\mu_i$ սկալյարների հաշվարկ հետևյալ բանաձևերով.
+
+\[
+\beta_i = \sqrt{\sum_{k=i}^n \left(a_{ki}^{(i-1)}\right)^2}; \qquad \mu_i = \frac{1}{\sqrt{2} \cdot \beta_i}
+\]
+\medskip
+
+\noindent\textbf{Օրինակ 6։} Դիտարկենք վերասերված
+\[
+A = \begin{pmatrix}
+0 & 2 & 1 \\
+0 & 0 & 1 \\
+0 & -1 & 1
+\end{pmatrix}
+\]
+մատրիցի $QR$ վերլուծությունը։
+
+Քանի որ $A$-ի առաջին սյունն արդեն ունի պահանջվող տեսքը, այն է՝ զրոյական, ապա $H_1 = E \implies A_1 = H_1 A = A$։
+\begin{gather*}
+\beta_2 = \|(0; 0; -1)^T\| = 1; \qquad \mu_2 = \frac{1}{\sqrt{2}} \\
+w_2 = \frac{1}{\sqrt{2}} (0; 0 - \beta_2; -1)^T = \frac{1}{\sqrt{2}} (0; -1; -1)^T
+\end{gather*}
+\begin{align*}
+H_2 &= E - 2 w_2 w_2^T = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix} - 2 \cdot \frac{1}{2} \cdot \begin{pmatrix} 0 \\ -1 \\ -1 \end{pmatrix} (0; -1; -1) ={} \\
+    &= \begin{pmatrix} 1 & 0 & 0 \\ 0 & 0 & -1 \\ 0 & -1 & 0 \end{pmatrix}
+\end{align*}
+\begin{gather*}
+R = H_2 A_1 = H_2 H_1 A = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 0 & -1 \\ 0 & -1 & 0 \end{pmatrix} \cdot \begin{pmatrix} 0 & 2 & 1 \\ 0 & 0 & 1 \\ 0 & -1 & 1 \end{pmatrix} = \begin{pmatrix} 0 & 2 & 1 \\ 0 & 1 & -1 \\ 0 & 0 & -1 \end{pmatrix} \\
+Q = H_1 H_2 = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix} \cdot \begin{pmatrix} 1 & 0 & 0 \\ 0 & 0 & -1 \\ 0 & -1 & 0 \end{pmatrix} = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 0 & -1 \\ 0 & -1 & 0 \end{pmatrix}
+\end{gather*}
+\medskip
+
+\eqref{eq:phase_i_H} և \eqref{eq:phase_i_params} բանաձևերով $i$-րդ փուլի ձևափոխության Հաուսհոլդերի մատրիցի փաստացի կառուցումը բերում է
+{\small\setlength{\arraycolsep}{4pt}
+\[
+H_i = \begin{pmatrix}
+1 & \dots & 0 & 0 & 0 & \dots & 0 \\
+\vdots & \ddots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & \dots & 1 & 0 & 0 & \dots & 0 \\
+0 & \dots & 0 & 1 - 2\mu_i^2 \tilde{w}_i^2 & -2\mu_i^2 \tilde{w}_i a_{i+1,i}^{(i-1)} & \dots & -2\mu_i^2 \tilde{w}_i a_{ni}^{(i-1)} \\
+0 & \dots & 0 & -2\mu_i^2 \tilde{w}_i a_{i+1,i}^{(i-1)} & 1 - 2\mu_i^2 a_{i+1,i}^{(i-1)} a_{i+1,i}^{(i-1)} & \dots & -2\mu_i^2 a_{i+1,i}^{(i-1)} a_{ni}^{(i-1)} \\
+\vdots & \dots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & \dots & 0 & -2\mu_i^2 \tilde{w}_i a_{ni}^{(i-1)} & -2\mu_i^2 a_{i+1,i}^{(i-1)} a_{ni}^{(i-1)} & \dots & 1 - 2\mu_i^2 a_{ni}^{(i-1)} a_{ni}^{(i-1)}
+\end{pmatrix}
+\]
+}
+տեսքի մատրիցի, որի վերին ձախ անկյունը $(i-1) \times (i-1)$ չափի միավոր մատրից է, իսկ $\tilde{w}_i = a_{ii}^{(i-1)} - \beta_i$։ Այդ մատրիցի բազմապատկումը նախորդ փուլի $A_{i-1}$ մատրիցով, որն ունի հետևյալ տեսքը՝
+{\small\setlength{\arraycolsep}{4pt}
+\[
+A_{i-1} = \begin{pmatrix}
+\beta_1 & a_{12}^{(1)} & \dots & a_{1,i-1}^{(1)} & a_{1i}^{(1)} & a_{1,i+1}^{(1)} & \dots & a_{1n}^{(1)} \\
+0 & \beta_2 & \dots & a_{2,i-1}^{(2)} & a_{2i}^{(2)} & a_{2,i+1}^{(2)} & \dots & a_{2n}^{(2)} \\
+\vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \dots & \beta_{i-1} & a_{i-1,i}^{(i-1)} & a_{i-1,i+1}^{(i-1)} & \dots & a_{i-1,n}^{(i-1)} \\
+0 & 0 & \dots & 0 & a_{ii}^{(i-1)} & a_{i,i+1}^{(i-1)} & \dots & a_{in}^{(i-1)} \\
+\vdots & \vdots & \dots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \dots & 0 & a_{ni}^{(i-1)} & a_{n,i+1}^{(i-1)} & \dots & a_{nn}^{(i-1)}
+\end{pmatrix}
+\]
+}
+բերում է հետևյալ մատրիցի.
+{\small\setlength{\arraycolsep}{4pt}
+\[
+A_i = H_i A_{i-1} = \begin{pmatrix}
+\beta_1 & a_{12}^{(1)} & \dots & a_{1,i-1}^{(1)} & a_{1,i}^{(1)} & a_{1,i+1}^{(1)} & \dots & a_{1n}^{(1)} \\
+0 & \beta_2 & \dots & a_{2,i-1}^{(2)} & a_{2,i}^{(2)} & a_{2,i+1}^{(2)} & \dots & a_{2n}^{(2)} \\
+\vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \dots & \beta_{i-1} & a_{i-1,i}^{(i-1)} & a_{i-1,i+1}^{(i-1)} & \dots & a_{i-1,n}^{(i-1)} \\
+0 & 0 & \dots & 0 & \beta_i & a_{i,i+1}^{(i)} & \dots & a_{in}^{(i)} \\
+0 & 0 & \dots & 0 & 0 & a_{i+1,i+1}^{(i)} & \dots & a_{i+1,n}^{(i)} \\
+\vdots & \vdots & \dots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \dots & 0 & 0 & a_{n,i+1}^{(i)} & \dots & a_{nn}^{(i)}
+\end{pmatrix}
+\]
+}
+որի նոր $a_{mj}^{(i)}$ տարրերը հաշվվում են հետևյալ բանաձևով.
+\[
+a_{mj}^{(i)} = a_{mj}^{(i-1)} - 2 \mu_i^2 a_{mi}^{(i-1)} \sum_{k=i}^n a_{ki}^{(i-1)} \cdot a_{kj}^{(i-1)}
+\]
+երբ $m = i; i+1; \dots; n$, $j = i+1; \dots; n$, հաշվի առնելով նաև, որ այստեղ միօրինակության նկատառումից ելնելով՝ $a_{ii}^{(i-1)}$ տարրը նույնացվել է $a_{ii}^{(i-1)} := a_{ii}^{(i-1)} - \beta_i$ տարրի հետ։
+
+\medskip
+\noindent\textbf{Օրինակ 7։} Գտնել
+\[
+A = \begin{pmatrix}
+1 & 1 & 0 & 0 \\
+1 & 2 & 1 & 0 \\
+0 & 1 & 2 & 1 \\
+0 & 0 & 1 & 2
+\end{pmatrix}
+\]
+մատրիցի $QR$ վերլուծությունը։
+
+Ունենք.
+\begin{gather*}
+\beta_1 = \operatorname{sgn}(-1)\sqrt{1 + 1} = -\sqrt{2}; \qquad \mu_1 = \frac{1}{\sqrt{2 \cdot 2 + 2\sqrt{2} \cdot 1}} = \frac{1}{\sqrt{4 + 2\sqrt{2}}} \\
+w_1 = \frac{1}{\sqrt{4 + 2\sqrt{2}}} \begin{pmatrix} 1 + \sqrt{2} \\ 1 \\ 0 \\ 0 \end{pmatrix}
+\end{gather*}
+\begin{align*}
+H_1 &= E - 2 w_1 w_1^T = E - \frac{1}{2 + \sqrt{2}} \begin{pmatrix} 1 + \sqrt{2} \\ 1 \\ 0 \\ 0 \end{pmatrix} \begin{pmatrix} 1 + \sqrt{2} & 1 & 0 & 0 \end{pmatrix} ={} \\
+    &= \frac{1}{2 + \sqrt{2}} \begin{pmatrix}
+-1 - \sqrt{2} & -1 - \sqrt{2} & 0 & 0 \\
+-1 - \sqrt{2} & 1 + \sqrt{2} & 0 & 0 \\
+0 & 0 & 2 + \sqrt{2} & 0 \\
+0 & 0 & 0 & 2 + \sqrt{2}
+\end{pmatrix}
+= \begin{pmatrix}
+-\frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} & 0 & 0 \\
+-\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1
+\end{pmatrix}
+\end{align*}
+\begin{align*}
+A_1 = H_1 A &= \begin{pmatrix}
+-\frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} & 0 & 0 \\
+-\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+1 & 1 & 0 & 0 \\
+1 & 2 & 1 & 0 \\
+0 & 1 & 2 & 1 \\
+0 & 0 & 1 & 2
+\end{pmatrix} ={} \\
+&= \begin{pmatrix}
+-\frac{2}{\sqrt{2}} & -\frac{3}{\sqrt{2}} & -\frac{1}{\sqrt{2}} & 0 \\
+0 & \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} & 0 \\
+0 & 1 & 2 & 1 \\
+0 & 0 & 1 & 2
+\end{pmatrix}
+\end{align*}
+
+\begin{gather*}
+\beta_2 = \operatorname{sgn}\left(-\frac{1}{\sqrt{2}}\right)\sqrt{\frac{1}{2} + 1} = -\frac{\sqrt{3}}{\sqrt{2}}; \qquad \mu_2 = \frac{1}{\sqrt{2 \cdot \frac{3}{2} + 2\frac{\sqrt{3}}{\sqrt{2}} \cdot \frac{1}{\sqrt{2}}}} = \frac{1}{\sqrt{3 + \sqrt{3}}} \\
+w_2 = \frac{1}{\sqrt{3 + \sqrt{3}}} \begin{pmatrix} 0 \\ \frac{1 + \sqrt{3}}{\sqrt{2}} \\ 1 \\ 0 \end{pmatrix}
+\end{gather*}
+\begin{align*}
+H_2 &= E - 2 w_2 w_2^T = E - \frac{2}{3 + \sqrt{3}} \begin{pmatrix} 0 \\ \frac{1 + \sqrt{3}}{\sqrt{2}} \\ 1 \\ 0 \end{pmatrix} \cdot \begin{pmatrix} 0 & \frac{1 + \sqrt{3}}{\sqrt{2}} & 1 & 0 \end{pmatrix} ={} \\
+    &= E - \frac{3 - \sqrt{3}}{3} \cdot \begin{pmatrix}
+0 & 0 & 0 & 0 \\
+0 & 2 + \sqrt{3} & \frac{1 + \sqrt{3}}{\sqrt{2}} & 0 \\
+0 & \frac{1 + \sqrt{3}}{\sqrt{2}} & 1 & 0 \\
+0 & 0 & 0 & 0
+\end{pmatrix}
+= \begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & -\frac{\sqrt{3}}{3} & -\frac{2\sqrt{3}}{3\sqrt{2}} & 0 \\
+0 & -\frac{2\sqrt{3}}{3\sqrt{2}} & \frac{\sqrt{3}}{3} & 0 \\
+0 & 0 & 0 & 1
+\end{pmatrix}
+\end{align*}
+\begin{align*}
+A_2 = H_2 A_1 &= \begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & -\frac{\sqrt{3}}{3} & -\frac{2\sqrt{3}}{3\sqrt{2}} & 0 \\
+0 & -\frac{2\sqrt{3}}{3\sqrt{2}} & \frac{\sqrt{3}}{3} & 0 \\
+0 & 0 & 0 & 1
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+-\frac{2}{\sqrt{2}} & -\frac{3}{\sqrt{2}} & -\frac{1}{\sqrt{2}} & 0 \\
+0 & \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} & 0 \\
+0 & 1 & 2 & 1 \\
+0 & 0 & 1 & 2
+\end{pmatrix} ={} \\
+&= \begin{pmatrix}
+-\sqrt{2} & -\frac{3}{\sqrt{2}} & -\frac{1}{\sqrt{2}} & 0 \\
+0 & -\frac{\sqrt{3}}{\sqrt{2}} & -\frac{5\sqrt{3}}{3\sqrt{2}} & -\frac{2\sqrt{3}}{3\sqrt{2}} \\
+0 & 0 & \frac{1}{\sqrt{3}} & \frac{1}{\sqrt{3}} \\
+0 & 0 & 1 & 2
+\end{pmatrix}
+\end{align*}
+
+\begin{gather*}
+\beta_3 = \operatorname{sgn}\left(-\frac{1}{\sqrt{3}}\right)\sqrt{1 + \frac{1}{3}} = -\frac{2}{\sqrt{3}}; \qquad \mu_3 = \frac{1}{\sqrt{2 \cdot \frac{4}{3} + 2 \cdot \frac{2}{\sqrt{3}} \cdot \frac{1}{\sqrt{3}}}} = \frac{1}{2} \\
+w_3 = \frac{1}{2} \begin{pmatrix} 0 \\ 0 \\ \sqrt{3} \\ 1 \end{pmatrix}; \qquad H_3 = E - 2 w_3 w_3^T = \frac{1}{2} \begin{pmatrix}
+2 & 0 & 0 & 0 \\
+0 & 2 & 0 & 0 \\
+0 & 0 & -1 & -\sqrt{3} \\
+0 & 0 & -\sqrt{3} & 1
+\end{pmatrix}
+\end{gather*}
+\begin{align*}
+R = A_3 = H_3 \cdot A_2 &= \frac{1}{2} \begin{pmatrix}
+2 & 0 & 0 & 0 \\
+0 & 2 & 0 & 0 \\
+0 & 0 & -1 & -\sqrt{3} \\
+0 & 0 & -\sqrt{3} & 1
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+-\sqrt{2} & -\frac{3}{\sqrt{2}} & -\frac{1}{\sqrt{2}} & 0 \\
+0 & -\frac{\sqrt{3}}{\sqrt{2}} & -\frac{5\sqrt{3}}{3\sqrt{2}} & -\frac{2\sqrt{3}}{3\sqrt{2}} \\
+0 & 0 & \frac{1}{\sqrt{3}} & \frac{1}{\sqrt{3}} \\
+0 & 0 & 1 & 2
+\end{pmatrix} ={} \\
+&= \begin{pmatrix}
+-\sqrt{2} & -\frac{3\sqrt{2}}{2} & -\frac{\sqrt{2}}{2} & 0 \\
+0 & -\frac{\sqrt{6}}{2} & -\frac{5\sqrt{6}}{6} & -\frac{\sqrt{6}}{3} \\
+0 & 0 & -\frac{2\sqrt{3}}{3} & -\frac{7\sqrt{3}}{6} \\
+0 & 0 & 0 & \frac{1}{2}
+\end{pmatrix}
+\end{align*}
+{\setlength{\arraycolsep}{4pt}
+\begin{align*}
+Q = H_1 \cdot H_2 \cdot H_3 &= \begin{pmatrix}
+-\frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} & 0 & 0 \\
+-\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & -\frac{\sqrt{3}}{3} & -\frac{2\sqrt{3}}{3\sqrt{2}} & 0 \\
+0 & -\frac{2\sqrt{3}}{3\sqrt{2}} & \frac{\sqrt{3}}{3} & 0 \\
+0 & 0 & 0 & 1
+\end{pmatrix}
+\cdot \frac{1}{2}
+\begin{pmatrix}
+2 & 0 & 0 & 0 \\
+0 & 2 & 0 & 0 \\
+0 & 0 & -1 & -\sqrt{3} \\
+0 & 0 & -\sqrt{3} & 1
+\end{pmatrix} ={} \\
+&= \begin{pmatrix}
+-\frac{\sqrt{2}}{2} & \frac{\sqrt{6}}{6} & -\frac{\sqrt{3}}{6} & -\frac{1}{2} \\
+-\frac{\sqrt{2}}{2} & -\frac{\sqrt{6}}{6} & \frac{\sqrt{3}}{6} & \frac{1}{2} \\
+0 & -\frac{\sqrt{6}}{3} & -\frac{\sqrt{3}}{6} & -\frac{1}{2} \\
+0 & 0 & -\frac{\sqrt{3}}{2} & \frac{1}{2}
+\end{pmatrix}
+\end{align*}
+}
+
+Այսպիսով, վերջնականապես ստանում ենք.
+{\setlength{\arraycolsep}{4pt}
+\[
+\begin{pmatrix}
+1 & 1 & 0 & 0 \\
+1 & 2 & 1 & 0 \\
+0 & 1 & 2 & 1 \\
+0 & 0 & 1 & 2
+\end{pmatrix}
+=
+\begin{pmatrix}
+-\frac{\sqrt{2}}{2} & \frac{\sqrt{6}}{6} & -\frac{\sqrt{3}}{6} & -\frac{1}{2} \\
+-\frac{\sqrt{2}}{2} & -\frac{\sqrt{6}}{6} & \frac{\sqrt{3}}{6} & \frac{1}{2} \\
+0 & -\frac{\sqrt{6}}{3} & -\frac{\sqrt{3}}{6} & -\frac{1}{2} \\
+0 & 0 & -\frac{\sqrt{3}}{2} & \frac{1}{2}
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+-\sqrt{2} & -\frac{3\sqrt{2}}{2} & -\frac{\sqrt{2}}{2} & 0 \\
+0 & -\frac{\sqrt{6}}{2} & -\frac{5\sqrt{6}}{6} & -\frac{\sqrt{6}}{3} \\
+0 & 0 & -\frac{2\sqrt{3}}{3} & -\frac{7\sqrt{3}}{6} \\
+0 & 0 & 0 & \frac{1}{2}
+\end{pmatrix}
+\]
+}
+
+\end{document}
