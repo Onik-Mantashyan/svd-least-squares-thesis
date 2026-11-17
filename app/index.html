@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Վերլուծական հարթակ</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    :root {
+      --bg: #f4f6fb; --card: #ffffff; --primary: #1e40af;
+      --accent: #2563eb; --text: #1e293b; --muted: #64748b; --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.5;
+    }
+    header {
+      background: linear-gradient(135deg, #0f172a, #1e3a8a);
+      color: #fff; padding: 18px 28px; box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    }
+    header h1 { margin: 0; font-size: 1.25rem; }
+    header p { margin: 4px 0 0; font-size: 0.88rem; color: #cbd5e1; }
+    .tabs {
+      display: flex; gap: 8px; padding: 14px 28px 0;
+      background: #fff; border-bottom: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 10px 18px; border: none; background: transparent; cursor: pointer;
+      font-size: 0.95rem; font-weight: 600; color: var(--muted);
+      border-bottom: 3px solid transparent; transition: 0.2s;
+    }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .container { max-width: 1220px; margin: 20px auto; padding: 0 20px; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .grid { display: grid; grid-template-columns: 350px 1fr; gap: 18px; align-items: start; margin-bottom: 18px; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      margin-bottom: 18px;
+    }
+    .card h3 { margin-top: 0; font-size: 1.05rem; color: #0f172a; }
+    label { display: block; font-size: 0.85rem; font-weight: 600; margin: 10px 0 4px; color: #334155; }
+    input[type="text"], input[type="number"], textarea, select {
+      width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1;
+      border-radius: 8px; font-family: monospace; font-size: 0.9rem;
+    }
+    .btn {
+      background: var(--accent); color: #fff; border: none; padding: 9px 14px;
+      border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; margin-top: 10px;
+    }
+    .btn:hover { background: var(--primary); }
+    .btn-sm {
+      background: #eff6ff; color: var(--primary); border: 1px solid #bfdbfe;
+      padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin: 4px 4px 0 0;
+    }
+    .result-box {
+      background: #f8fafc; border-left: 4px solid var(--accent);
+      padding: 10px 12px; border-radius: 6px; margin-top: 12px;
+      font-family: monospace; font-size: 0.86rem; white-space: pre-wrap;
+    }
+    .err-box {
+      background: #fef2f2; border-left: 4px solid #dc2626; color: #991b1b;
+      padding: 10px 12px; border-radius: 6px; margin-top: 10px; display: none;
+    }
+    .heat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Սինգուլյար վերլուծությունը փոքրագույն քառակուսիների մեթոդի գծային խնդրում</h1>
+    <p>(Julia backend + Plotly.js)</p>
+  </header>
+
+  <div id="tabs" class="tabs"></div>
+  <div id="panels" class="container"></div>
+
+  <script>
+    const parseVec = s => s.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v));
+    const parseMat = s => s.trim().split('\n').map(r => r.trim().split(/[\s,]+/).map(Number));
+
+    function drawHeatmap(divId, title, mat) {
+      const text = mat.map(r => r.map(v => Number(v.toFixed(3)).toString()));
+      Plotly.newPlot(divId, [{
+        z: mat, text, texttemplate: '%{text}', type: 'heatmap',
+        colorscale: 'RdBu', reversescale: true, showscale: false
+      }], {
+        title: { text: title, font: { size: 14 } },
+        yaxis: { autorange: 'reversed', showticklabels: false },
+        xaxis: { showticklabels: false },
+        margin: { t: 35, b: 15, l: 15, r: 15 }, height: 240
+      }, { responsive: true });
+    }
+
+    function createFieldControl(field, uid, onAutoChange) {
+      const wrap = document.createElement('div');
+      const lbl = document.createElement('label');
+      lbl.textContent = field.label || field.name;
+      wrap.appendChild(lbl);
+
+      let input;
+      if (field.type === 'matrix') {
+        input = document.createElement('textarea');
+        input.rows = 4;
+        input.value = field.default ?? '';
+      } else if (field.type === 'select') {
+        input = document.createElement('select');
+        (field.options || []).forEach(opt => {
+          const o = document.createElement('option');
+          o.value = opt.value; o.textContent = opt.label;
+          input.appendChild(o);
+        });
+      } else if (field.type === 'range') {
+        const valSpan = document.createElement('span');
+        valSpan.textContent = field.default ?? field.min;
+        lbl.appendChild(document.createTextNode(' = '));
+        lbl.appendChild(valSpan);
+        input = document.createElement('input');
+        input.type = 'range';
+        input.min = field.min ?? 1; input.max = field.max ?? 5;
+        input.value = field.default ?? 2;
+        input.oninput = () => { valSpan.textContent = input.value; onAutoChange(); };
+      } else {
+        input = document.createElement('input');
+        input.type = field.type === 'number' ? 'number' : 'text';
+        input.value = field.default ?? '';
+      }
+      input.id = uid;
+      input.dataset.fieldType = field.type;
+      input.dataset.fieldName = field.name;
+      wrap.appendChild(input);
+      return wrap;
+    }
+
+    function readFieldValue(el) {
+      const t = el.dataset.fieldType;
+      if (t === 'matrix') return parseMat(el.value);
+      if (t === 'vector') return parseVec(el.value);
+      if (t === 'number' || t === 'range') return parseFloat(el.value);
+      return el.value;
+    }
+
+    async function runAction(file, action, controlsMap, errEl, resEl, plotContainer) {
+      errEl.style.display = 'none';
+      const params = {};
+      for (const [name, el] of Object.entries(controlsMap)) {
+        params[name] = readFieldValue(el);
+      }
+
+      const res = await fetch('/api/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ file, action: action.id, params })
+      });
+      const d = await res.json();
+      if (!res.ok) {
+        errEl.style.display = 'block';
+        errEl.textContent = d.error || 'Սխալ հաշվարկի ժամանակ';
+        return;
+      }
+
+      resEl.textContent = d.text || '';
+      plotContainer.innerHTML = '';
+
+      (d.plots || []).forEach((p, idx) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const h3 = document.createElement('h3');
+        h3.textContent = p.title || 'Վիզուալիզացիա';
+        card.appendChild(h3);
+
+        if (p.type === 'heatmaps') {
+          const grid = document.createElement('div');
+          grid.className = 'heat-grid';
+          card.appendChild(grid);
+          plotContainer.appendChild(card);
+          (p.matrices || []).forEach((m, j) => {
+            const div = document.createElement('div');
+            div.id = `plot-${file}-${action.id}-${idx}-${j}`;
+            grid.appendChild(div);
+            drawHeatmap(div.id, m.title, m.data);
+          });
+        } else {
+          const div = document.createElement('div');
+          div.style.height = p.height || '420px';
+          card.appendChild(div);
+          plotContainer.appendChild(card);
+          Plotly.newPlot(div, p.traces || [], p.layout || {}, { responsive: true });
+          if (p.click_add) {
+            const hint = document.createElement('div');
+            hint.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:0.85rem;color:#64748b;';
+            hint.innerHTML = '<span>Սեղմեք գրաֆիկի վրա՝ նոր կետ ավելացնելու համար</span>';
+
+            const undoBtn = document.createElement('button');
+            undoBtn.className = 'btn-sm';
+            undoBtn.textContent = 'Ջնջել վերջին կետը';
+            undoBtn.onclick = () => {
+              const xEl = controlsMap[p.click_add.x];
+              const yEl = controlsMap[p.click_add.y];
+              const xv = parseVec(xEl.value);
+              const yv = parseVec(yEl.value);
+              if (xv.length > 3 && yv.length > 3) {
+                xv.pop();
+                yv.pop();
+                xEl.value = xv.join(', ');
+                yEl.value = yv.join(', ');
+                runAction(file, action, controlsMap, errEl, resEl, plotContainer);
+              }
+            };
+            hint.appendChild(undoBtn);
+            card.insertBefore(hint, div);
+
+            div.style.cursor = 'crosshair';
+            let downX = 0, downY = 0;
+            div.addEventListener('mousedown', ev => { downX = ev.clientX; downY = ev.clientY; });
+            div.addEventListener('click', ev => {
+              if (ev.target.closest('.modebar')) return;
+              if (Math.hypot(ev.clientX - downX, ev.clientY - downY) > 5) return;
+
+              const fl = div._fullLayout;
+              if (!fl || !fl.xaxis || !fl.yaxis) return;
+
+              const rect = div.getBoundingClientRect();
+              const px = ev.clientX - rect.left - fl.xaxis._offset;
+              const py = ev.clientY - rect.top - fl.yaxis._offset;
+              if (px < 0 || px > fl.xaxis._length || py < 0 || py > fl.yaxis._length) return;
+
+              const xVal = Number(fl.xaxis.p2c(px).toFixed(2));
+              const yVal = Number(fl.yaxis.p2c(py).toFixed(2));
+
+              const xEl = controlsMap[p.click_add.x];
+              const yEl = controlsMap[p.click_add.y];
+              const xv = parseVec(xEl.value);
+              const yv = parseVec(yEl.value);
+              xv.push(xVal);
+              yv.push(yVal);
+              xEl.value = xv.join(', ');
+              yEl.value = yv.join(', ');
+              runAction(file, action, controlsMap, errEl, resEl, plotContainer);
+            });
+          }
+        }
+      });
+    }
+
+    async function initPlatform() {
+      const res = await fetch('/api/modules');
+      const data = await res.json();
+      const tabsEl = document.getElementById('tabs');
+      const panelsEl = document.getElementById('panels');
+      tabsEl.innerHTML = '';
+      panelsEl.innerHTML = '';
+
+      if (!data.modules.length) {
+        panelsEl.innerHTML = '<div class="card">src/ թղթապանակում .jl ֆայլեր չեն գտնվել։</div>';
+        return;
+      }
+
+      const tabRunners = {};
+
+      data.modules.forEach((mod, mIdx) => {
+        // Tab կոճակ
+        const btn = document.createElement('button');
+        btn.className = 'tab-btn' + (mIdx === 0 ? ' active' : '');
+        btn.textContent = `${mIdx + 1}. ${mod.title}`;
+        tabsEl.appendChild(btn);
+
+        // Panel
+        const panel = document.createElement('div');
+        panel.className = 'panel' + (mIdx === 0 ? ' active' : '');
+        panelsEl.appendChild(panel);
+        tabRunners[mod.id] = [];
+
+        (mod.actions || []).forEach((action, aIdx) => {
+          const grid = document.createElement('div');
+          grid.className = 'grid';
+
+          const formCard = document.createElement('div');
+          formCard.className = 'card';
+          const h3 = document.createElement('h3');
+          h3.textContent = action.title || action.id;
+          formCard.appendChild(h3);
+
+          const controlsMap = {};
+          const plotContainer = document.createElement('div');
+          const errEl = document.createElement('div');
+          errEl.className = 'err-box';
+          const resEl = document.createElement('div');
+          resEl.className = 'result-box';
+
+          const execute = () => runAction(mod.id, action, controlsMap, errEl, resEl, plotContainer);
+
+          // Presets
+          if (action.presets && action.presets.length) {
+            const pWrap = document.createElement('div');
+            action.presets.forEach(pr => {
+              const pBtn = document.createElement('button');
+              pBtn.className = 'btn-sm';
+              pBtn.textContent = pr.label;
+              pBtn.onclick = () => {
+                for (const [k, v] of Object.entries(pr.values)) {
+                  if (controlsMap[k]) controlsMap[k].value = v;
+                }
+                execute();
+              };
+              pWrap.appendChild(pBtn);
+            });
+            formCard.appendChild(pWrap);
+          }
+
+          // Fields
+          (action.fields || []).forEach(f => {
+            const uid = `inp-${mIdx}-${aIdx}-${f.name}`;
+            const ctrlWrap = createFieldControl(f, uid, execute);
+            formCard.appendChild(ctrlWrap);
+            controlsMap[f.name] = ctrlWrap.querySelector('input, textarea, select');
+          });
+
+          const runBtn = document.createElement('button');
+          runBtn.className = 'btn';
+          runBtn.textContent = 'Հաշվել';
+          runBtn.onclick = execute;
+          formCard.appendChild(runBtn);
+          formCard.appendChild(errEl);
+          formCard.appendChild(resEl);
+
+          grid.appendChild(formCard);
+          grid.appendChild(plotContainer);
+          panel.appendChild(grid);
+          tabRunners[mod.id].push(execute);
+        });
+
+        btn.onclick = () => {
+          document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          panel.classList.add('active');
+          btn.classList.add('active');
+          tabRunners[mod.id].forEach(fn => fn());
+        };
+      });
+
+      // Աշխատացնել առաջին tab-ը բացվելուն պես
+      const firstId = data.modules[0].id;
+      tabRunners[firstId].forEach(fn => fn());
+    }
+
+    initPlatform();
+  </script>
+</body>
+</html>
