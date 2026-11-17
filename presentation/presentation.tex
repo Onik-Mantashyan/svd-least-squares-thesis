@@ -1,0 +1,375 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{} % Հանում է ներքևի ավելորդ նշանները
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage[numerals=arabic]{armenian}
+
+\setmainfont{GHEA Grapalat}
+\setsansfont{GHEA Grapalat}
+\newfontfamily\armenianfont{GHEA Grapalat}
+\newfontfamily\armenianfontsf{GHEA Grapalat}
+\newfontfamily\armenianfonttt{GHEA Grapalat}
+
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{booktabs}
+
+\title[Սինգուլյար վերլուծությունը ՓՔՄ-ում]{Սինգուլյար վերլուծությունը փոքրագույն քառակուսիների մեթոդի գծային խնդրում}
+\subtitle{Ավարտական աշխատանք}
+\author{Օնիկ Մանթաշյան}
+\institute[ԿՄ և Ֆ]{Կիրառական Մաթեմատիկայի և Ֆիզիկայի ամբիոն}
+\date{2026 թ.}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{Բովանդակություն}
+    \tableofcontents
+\end{frame}
+
+% ==========================================================
+\section{Նախաբան}
+% ==========================================================
+
+\begin{frame}{Ապրոքսիմացիա և ինտերպոլյացիա}
+    \vspace{-0.3cm}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Ապրոքսիմացիա}
+                Գտնել $L$ կոր, որը պարտադիր չէ, որ անցնի բոլոր կետերով, բայց հնարավորինս «լավ» բնութագրի դրանք (աղմկոտ տվյալների դեպքում)։
+            \end{block}
+            \centering
+            \begin{tikzpicture}[scale=0.60]
+                \draw[->] (-1.1,0) -- (4.5,0) node[right] {\footnotesize $x$};
+                \draw[->] (0,-0.25) -- (0,2.3) node[left] {\footnotesize $y$};
+                \draw[thick, blue] plot[smooth] coordinates {(-0.8,1.0) (0,1.75) (1.2,1.5) (2.6,1.15) (4.0,1.55)};
+                \node[below, blue] at (2.2,1.15) {\footnotesize $L$};
+                \fill[red] (-0.6,1.35) circle (2.3pt);
+                \fill[red] (0.05,1.95) circle (2.3pt);
+                \fill[red] (1.3,1.85) circle (2.3pt);
+                \fill[red] (2.6,0.85) circle (2.3pt);
+                \fill[red] (3.8,1.8) circle (2.3pt);
+            \end{tikzpicture}
+        \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Ինտերպոլյացիա}
+                Եթե կորն անցնում է տրված բոլոր կետերով, ապա այն կոչվում է տրված կետերի բազմության ինտերպոլյացիոն կոր։
+            \end{block}
+            \centering
+            \begin{tikzpicture}[scale=0.60]
+                \draw[->] (-1.8,0) -- (4.2,0) node[right] {\footnotesize $x$};
+                \draw[->] (0,-0.25) -- (0,2.3) node[right] {\footnotesize $y$};
+                \draw[thick, blue] plot[smooth] coordinates {(-1.5,0.7) (-1.2,1.0) (-0.1,1.75) (1.1,1.65) (2.3,1.65) (3.4,2.05) (3.8,2.2)};
+                \node[below right, blue] at (3.5,2.1) {\footnotesize $L$};
+                \fill[red] (-1.2,1.0) circle (2.3pt);
+                \fill[red] (-0.1,1.75) circle (2.3pt);
+                \fill[red] (1.1,1.65) circle (2.3pt);
+                \fill[red] (2.3,1.65) circle (2.3pt);
+                \fill[red] (3.4,2.05) circle (2.3pt);
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+
+    \begin{alertblock}{Հիմնական գաղափարը}
+        Աղմուկ պարունակող տվյալների դեպքում ինտերպոլյացիան առաջացնում է ավելորդ տատանումներ, ուստի կիրառվում է \textbf{փոքրագույն քառակուսիների մեթոդով ապրոքսիմացիան}։
+    \end{alertblock}
+\end{frame}
+
+% ==========================================================
+\section{Գծային ապրոքսիմացիա (փոքրագույն քառակուսիների մեթոդով)}
+% ==========================================================
+
+\begin{frame}{Գծային ապրոքսիմացիայի խնդրի դրվածքը}
+    \begin{columns}[T]
+        \begin{column}{0.55\textwidth}
+            Տրված են $M_1(x_1, y_1), \dots, M_n(x_n, y_n)$ կետերը ($n \geqslant 3$)։ Պահանջվում է գտնել $y = kx + b$ գծային ֆունկցիան՝
+            \[
+            S(k, b) = \sum_{i=1}^n \bigl(y_i - (kx_i + b)\bigr)^2 \to \min
+            \]
+            
+            \vspace{-0.3cm}
+            \begin{block}{Նորմալ հավասարումների համակարգը}
+                $\dfrac{\partial S}{\partial b} = 0$ և $\dfrac{\partial S}{\partial k} = 0$ պայմաններից ստացվում է՝
+                \[
+                \begin{cases}
+                k \sum_{i=1}^n x_i + nb = \sum_{i=1}^n y_i \\[4pt]
+                k \sum_{i=1}^n x_i^2 + b \sum_{i=1}^n x_i = \sum_{i=1}^n x_i y_i
+                \end{cases}
+                \]
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.42\textwidth}
+            \centering
+            \begin{tikzpicture}[scale=0.8]
+                \draw[->] (-2.2,0) -- (4.8,0) node[right] {\footnotesize $x$};
+                \draw[->] (0,-0.5) -- (0,3.4) node[right] {\footnotesize $y$};
+                \node[below left] at (0,0) {\footnotesize $O$};
+                \draw[thick, blue] (-2.0,0.2) -- (4.5,2.6) node[below] {\footnotesize $y = kx + b$};
+
+                \fill[red] (-1.3,1.1) circle (2pt) node[above] {\footnotesize $M_1$};
+                \draw[dashed, gray] (-1.3,1.1) -- (-1.3,0.46);
+                \fill[red] (-0.5,2.4) circle (2pt) node[left] {\footnotesize $M_2$};
+                \draw[dashed, gray] (-0.5,2.4) -- (-0.5,0.75);
+                \fill[red] (0.9,2.0) circle (2pt) node[above] {\footnotesize $M_3$};
+                \draw[dashed, gray] (0.9,2.0) -- (0.9,1.27);
+                \fill[red] (1.8,0.7) circle (2pt) node[below] {\footnotesize $M_4$};
+                \draw[dashed, gray] (1.8,0.7) -- (1.8,1.60);
+                \fill[red] (3.5,3.0) circle (2pt) node[above] {\footnotesize $M_n$};
+                \draw[dashed, gray] (3.5,3.0) -- (3.5,2.23);
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Լուծման միակությունը և $k, b$ գործակիցների բանաձևերը}
+    \begin{block}{Միակության պայմանը}
+        Համակարգի որոշիչը՝ $\Delta = \left(\sum_{i=1}^n x_i\right)^2 - n \sum_{i=1}^n x_i^2$։ Կոշի–Բունյակովսկու անհավասարմամբ, երբ աբսցիսները բոլորը հավասար չեն, ունենք $\Delta < 0$ ($\Delta \neq 0$)։ Քանի որ $S(k, b) \geqslant 0$ և անսահման աճում է, միակ ստացիոնար կետը հանդիսանում է փոքրագույն արժեքի կետը։
+    \end{block}
+
+    \begin{block}{Կրամերի կանոնով ստացված լուծումը}
+        \[
+        k = \frac{\sum_{i=1}^n x_i \cdot \sum_{i=1}^n y_i - n \sum_{i=1}^n x_i y_i}{\left(\sum_{i=1}^n x_i\right)^2 - n \sum_{i=1}^n x_i^2},
+        \qquad
+        b = \frac{1}{n}\left(\sum_{i=1}^n y_i - k\sum_{i=1}^n x_i\right) = \bar{y} - k\bar{x}
+        \]
+    \end{block}
+
+    \begin{itemize}
+        \item Հետևանք՝ $\bar{y} = k\bar{x} + b$, այսինքն՝ $M(\bar{x}, \bar{y})$ միջին կետը միշտ պատկանում է գծային ֆունկցիայի գրաֆիկին։
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Գծային ապրոքսիմացիայի օրինակ}
+    \begin{columns}[T]
+        \begin{column}{0.51\textwidth}
+            \textbf{Տրված են} $M_1(2, 7)$, $M_2(4, 3)$, $M_3(5, 6)$, $M_4(6, 8)$ կետերը ($n = 4$)։
+            \vspace{0.15cm}
+            \begin{itemize}
+                \item $\sum x_i = 17$, \quad $\sum y_i = 24$
+                \item $\sum x_i^2 = 81$, \quad $\sum x_i y_i = 104$
+            \end{itemize}
+            \vspace{0.1cm}
+            \[
+            k = \frac{17 \cdot 24 - 4 \cdot 104}{289 - 4 \cdot 81} = \frac{-8}{-35} = \frac{8}{35}
+            \]
+            \[
+            b = \frac{1}{4}\left(24 - \frac{8}{35} \cdot 17\right) = \frac{176}{35}
+            \]
+            \begin{alertblock}{Պատասխան}
+                $\displaystyle y = \frac{8}{35}x + \frac{176}{35}$
+            \end{alertblock}
+        \end{column}
+
+        \begin{column}{0.46\textwidth}
+            \centering
+            \begin{tikzpicture}[x=0.72cm, y=0.45cm]
+                \draw[very thin, gray!25] (0,0) grid (7,8.5);
+                \draw[->] (-0.4,0) -- (7.4,0) node[right] {\footnotesize $x$};
+                \draw[->] (0,-0.4) -- (0,9.0) node[left] {\footnotesize $y$};
+                \foreach \x in {1,...,7} \draw (\x,0.12) -- (\x,-0.12) node[below] {\tiny $\x$};
+                \foreach \y in {2,4,6,8} \draw (0.1,\y) -- (-0.1,\y) node[left] {\tiny $\y$};
+
+                \draw[thick, blue] (0.5,5.143) -- (7.0,6.629);
+                \draw[dashed, gray] (2,7) -- (2,5.486);
+                \draw[dashed, gray] (4,3) -- (4,5.943);
+                \draw[dashed, gray] (5,6) -- (5,6.171);
+                \draw[dashed, gray] (6,8) -- (6,6.400);
+
+                \filldraw[fill=white, draw=blue, thick] (4.25,6) circle (2pt) node[above left] {\tiny $M(\bar{x}, \bar{y})$};
+                \fill[red] (2,7) circle (2pt) node[above] {\scriptsize $M_1$};
+                \fill[red] (4,3) circle (2pt) node[below] {\scriptsize $M_2$};
+                \fill[red] (5,6) circle (2pt) node[below right] {\scriptsize $M_3$};
+                \fill[red] (6,8) circle (2pt) node[above] {\scriptsize $M_4$};
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% ==========================================================
+\section{Բազմանդամային ապրոքսիմացիա}
+% ==========================================================
+
+\begin{frame}[t]{Բազմանդամային ապրոքսիմացիայի խնդրի դրվածքը}
+    \begin{columns}[T]
+        \begin{column}{0.56\textwidth}
+            \setlength{\abovedisplayskip}{5pt}
+            \setlength{\belowdisplayskip}{5pt}
+            Որպես մոտարկող կոր ընտրվում է $m$-րդ աստիճանի բազմանդամ ($m < n - 1$)՝
+            \[
+            P(x) = a_0 + a_1 x + a_2 x^2 + \dots + a_m x^m
+            \]
+            Փոքրագույն քառակուսիների մեթոդով՝
+            \[
+            S(a_0, \dots, a_m) = \sum_{i=1}^n \bigl(y_i - P(x_i)\bigr)^2 \to \min
+            \]
+        \end{column}
+
+        \begin{column}{0.41\textwidth}
+            \centering
+            \begin{tikzpicture}[scale=0.85]
+                \draw[->] (-2.1,0) -- (4.8,0) node[right] {\footnotesize $x$};
+                \draw[->] (0,-0.4) -- (0,3.1) node[left] {\footnotesize $y$};
+                \draw[thick, blue] plot[smooth] coordinates {(-1.9,0.85) (-1.3,1.08) (0.45,1.75) (1.4,2.0) (2.4,1.8) (3.5,1.3) (4.4,1.05)};
+                \node[above, blue] at (4.3,1.15) {\footnotesize $P(x)$};
+
+                \fill[red] (-1.3,1.60) circle (2pt) node[above] {\footnotesize $M_1$};
+                \draw (-1.3,1.60) -- (-1.3,1.08);
+                \fill[red] (0.45,1.15) circle (2pt) node[right] {\footnotesize $M_2$};
+                \draw (0.45,1.15) -- (0.45,1.75);
+                \fill[red] (1.4,2.65) circle (2pt) node[above] {\footnotesize $M_3$};
+                \draw (1.4,2.65) -- (1.4,2.0);
+                \fill[red] (2.4,2.35) circle (2pt) node[above right] {\footnotesize $M_i$};
+                \draw (2.4,2.35) -- (2.4,1.8);
+                \draw[dashed, gray] (2.4,1.8) -- (2.4,0) node[below] {\footnotesize $x_i$};
+                \draw[dashed, gray] (2.4,2.35) -- (0,2.35) node[left] {\footnotesize $y_i$};
+                \fill[red] (3.5,0.75) circle (2pt) node[below] {\footnotesize $M_n$};
+                \draw (3.5,0.75) -- (3.5,1.3);
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+
+    \vspace{-0.15cm}
+    \begin{block}{Նորմալ հավասարումների համակարգը}
+        \small
+        \setlength{\abovedisplayskip}{3pt}
+        \setlength{\belowdisplayskip}{3pt}
+        \[
+        \begin{cases}
+        a_0 n + a_1 \sum_{i=1}^n x_i + a_2 \sum_{i=1}^n x_i^2 + \dots + a_m \sum_{i=1}^n x_i^m = \sum_{i=1}^n y_i \\[3pt]
+        a_0 \sum_{i=1}^n x_i + a_1 \sum_{i=1}^n x_i^2 + a_2 \sum_{i=1}^n x_i^3 + \dots + a_m \sum_{i=1}^n x_i^{m+1} = \sum_{i=1}^n x_i y_i \\[-2pt]
+        \;\;\vdots \\[-2pt]
+        a_0 \sum_{i=1}^n x_i^m + a_1 \sum_{i=1}^n x_i^{m+1} + \dots + a_m \sum_{i=1}^n x_i^{2m} = \sum_{i=1}^n x_i^m y_i
+        \end{cases}
+        \]
+    \end{block}
+\end{frame}
+
+\begin{frame}{Մատրիցային ձևակերպումը}
+    Ներմուծենք Վանդերմոնդի $A$ մատրիցը և $X, Y$ վեկտորները՝
+    \small
+    \[
+    A =
+    \begin{pmatrix}
+    1 & x_1 & x_1^2 & \dots & x_1^m \\
+    1 & x_2 & x_2^2 & \dots & x_2^m \\
+    \vdots & \vdots & \vdots & \ddots & \vdots \\
+    1 & x_n & x_n^2 & \dots & x_n^m
+    \end{pmatrix}_{n \times (m+1)},
+    \qquad
+    X = \begin{pmatrix} a_0 \\ a_1 \\ \vdots \\ a_m \end{pmatrix},
+    \qquad
+    Y = \begin{pmatrix} y_1 \\ y_2 \\ \vdots \\ y_n \end{pmatrix}
+    \]
+    \normalsize
+    \vspace{-0.3cm}
+    \begin{block}{Նորմալ հավասարումների մատրիցային տեսքը}
+        \[
+        (A^T \cdot A) \cdot X = A^T \cdot Y \implies \boxed{X = (A^T \cdot A)^{-1} \cdot A^T \cdot Y}
+        \]
+    \end{block}
+
+    \vspace{-0.15cm}
+    \begin{alertblock}{Լուծելիությունը և հետագա խնդիրը}
+        Երբ $x_i$-երը տարբեր են և $m < n$, ապա $\det(A^T A) \neq 0$։ Սակայն մեծ $m$-երի և վատ պայմանավորված մատրիցների դեպքում $(A^T A)^{-1}$-ի հաշվարկը կորցնում է կայունությունը (որի համար հետագայում կիրառվում են ֆակտորիզացիաներ՝ $QR$ և SVD)։
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Քառակուսային ապրոքսիմացիայի օրինակ ($m = 2$)}
+    \begin{columns}[T]
+        \begin{column}{0.52\textwidth}
+            Նույն $M_1(2, 7), M_2(4, 3), M_3(5, 6), M_4(6, 8)$ կետերի համար ($n = 4, \, m = 2$)՝
+            \footnotesize
+            \[
+            A = \begin{pmatrix} 1 & 2 & 4 \\ 1 & 4 & 16 \\ 1 & 5 & 25 \\ 1 & 6 & 36 \end{pmatrix}, \quad
+            A^T A = \begin{pmatrix} 4 & 17 & 81 \\ 17 & 81 & 413 \\ 81 & 413 & 2193 \end{pmatrix}
+            \]
+            \[
+            A^T Y = \begin{pmatrix} 24 \\ 104 \\ 514 \end{pmatrix}, \qquad
+            X = (A^T A)^{-1} A^T Y = \begin{pmatrix} \frac{983}{55} \\[3pt] -\frac{149}{20} \\[3pt] \frac{43}{44} \end{pmatrix}
+            \]
+            \normalsize
+            \begin{alertblock}{Պատասխան}
+                $\displaystyle P(x) = \frac{983}{55} - \frac{149}{20}x + \frac{43}{44}x^2$
+            \end{alertblock}
+        \end{column}
+
+        \begin{column}{0.45\textwidth}
+            \centering
+            \begin{tikzpicture}[x=0.72cm, y=0.43cm]
+                \draw[very thin, gray!25] (0,0) grid (7,9.5);
+                \draw[->] (-0.4,0) -- (7.4,0) node[right] {\footnotesize $x$};
+                \draw[->] (0,-0.4) -- (0,10.0) node[left] {\footnotesize $y$};
+                \foreach \x in {1,...,7} \draw (\x,0.12) -- (\x,-0.12) node[below] {\tiny $\x$};
+                \foreach \y in {2,4,6,8} \draw (0.1,\y) -- (-0.1,\y) node[left] {\tiny $\y$};
+
+                \draw[thick, blue] plot[smooth] coordinates {
+                    (1.45,9.13) (1.75,7.83) (2.0,6.88) (2.5,5.36) (3.0,4.32)
+                    (3.5,3.77) (3.81,3.67) (4.0,3.71) (4.5,4.14) (5.0,5.05)
+                    (5.5,6.46) (6.0,8.35) (6.25,9.49)
+                };
+                \node[right, blue] at (6.25,9.2) {\footnotesize $P(x)$};
+
+                \draw[dashed, gray] (2,7) -- (2,6.88);
+                \draw[dashed, gray] (4,3) -- (4,3.71);
+                \draw[dashed, gray] (5,6) -- (5,5.05);
+                \draw[dashed, gray] (6,8) -- (6,8.35);
+
+                \fill[red] (2,7) circle (2pt) node[right] {\scriptsize $M_1$};
+                \fill[red] (4,3) circle (2pt) node[below] {\scriptsize $M_2$};
+                \fill[red] (5,6) circle (2pt) node[above left] {\scriptsize $M_3$};
+                \fill[red] (6,8) circle (2pt) node[right] {\scriptsize $M_4$};
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Մոտարկման որակի գնահատումը և մոդելների համեմատությունը}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Որակի չափանիշները}
+                \begin{itemize}
+                    \item $\mathrm{MSE} = \dfrac{S}{n}$, \quad $\mathrm{RMSE} = \sqrt{\dfrac{S}{n}}$
+                    \item $R^2 = 1 - \dfrac{S}{\sum_{i=1}^n (y_i - \bar{y})^2}$
+                \end{itemize}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Ոչ գծային ֆունկցիաների գծայնացում}
+                \begin{itemize}
+                    \item $y = ae^{bx} \implies \ln y = \ln a + bx$
+                    \item $y = ax^b \implies \ln y = \ln a + b\ln x$
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+
+    \begin{table}
+        \centering
+        \small
+        \renewcommand{\arraystretch}{1.35}
+        \begin{tabular}{@{}lcccc@{}}
+            \toprule
+            \textbf{Մոդելը (տրված 4 կետերի համար)} & $S$ & $\mathrm{MSE}$ & $\mathrm{RMSE}$ & $R^2$ \\
+            \midrule
+            Գծային ապրոքսիմացիա ($m = 1$) & $13.5429$ & $3.3857$ & $1.8400$ & $0.0327$ \\
+            Քառակուսային ապրոքսիմացիա ($m = 2$) & $1.5364$ & $0.3841$ & $0.6198$ & $0.8903$ \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \begin{itemize}
+        \item Քառակուսային մոդելը նվազեցնում է շեղումների գումարը գրեթե $9$ անգամ՝ ապահովելով $R^2 \approx 89.0\%$։
+    \end{itemize}
+\end{frame}
+
+\end{document}

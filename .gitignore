@@ -10,6 +10,8 @@
 *.lot
 *.bbl
 *.blg
+*.nav
+*.snm
 
 .DS_Store
 Thumbs.db
