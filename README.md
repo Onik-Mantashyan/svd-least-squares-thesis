@@ -5,6 +5,8 @@
 ### Կառուցվածք
 - `latex/main.tex` — աշխատանքի LaTeX կոդը (XeLaTeX)
 - `latex/main.pdf` — [ավարտական աշխատանքի տեքստը (PDF)](latex/main.pdf)
+- `presentation/presentation.tex` — պրեզենտացիայի LaTeX կոդը (Beamer)
+- `presentation/presentation.pdf` — [պրեզենտացիայի PDF տարբերակը](presentation/presentation.pdf)
 
 ### Ներառված բաժինները (ընթացիկ փուլ)
 - Նախաբան
